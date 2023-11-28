@@ -66,9 +66,10 @@ jobs:
       - name: Debug
         run: ls -R
       - name: Unzip fill
+      #           rm ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
         run: |
-          unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
-          rm ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+          unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+
           mv ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5 ${{ github.workspace }}/dist
       - name: Debug
         run: ls && ls dist/
