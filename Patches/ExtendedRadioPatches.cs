@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Colossal.IO.AssetDatabase;
@@ -8,12 +6,8 @@ using ExtendedRadio.MonoBehaviours;
 using Game;
 using Game.Audio;
 using Game.Audio.Radio;
-using Game.UI.InGame;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.InputSystem.EnhancedTouch;
-using UnityEngine.Rendering;
 using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio.Patches

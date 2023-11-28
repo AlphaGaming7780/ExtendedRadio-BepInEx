@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using ATL;
-using ATL.AudioData;
-using ATL.CatalogDataReaders;
 using Colossal.IO.AssetDatabase;
-using Colossal.Json;
-using Game.SceneFlow;
-using Game.Serialization;
-using Game.UI.InGame;
 using HarmonyLib;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using static Colossal.IO.AssetDatabase.AudioAsset;
 
