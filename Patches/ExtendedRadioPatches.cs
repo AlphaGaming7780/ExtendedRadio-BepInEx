@@ -89,13 +89,14 @@ namespace ExtendedRadio.Patches
 				if(radioNetwork != radioDirectory) {
 					if(Directory.GetFiles(radioNetwork, "*.ogg").Count() == 0) {
 						Debug.Log("Creating Network : " + new DirectoryInfo(radioNetwork).Name);
+						string iconPath = Path.Combine(radioNetwork, "icon.svg");
 						RadioNetwork network = new()
 						{
 							name = new DirectoryInfo(radioNetwork).Name,
 							nameId = new DirectoryInfo(radioNetwork).Name,
 							description = "A custom radio",
 							descriptionId = "A custom radio",
-							icon = "Media/Radio/Networks/Commercial.svg",
+							icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"),// "Media/Radio/Networks/Commercial.svg",
 							uiPriority = radioNetworkIndex++,
 							allowAds = true
 						};
@@ -180,7 +181,7 @@ namespace ExtendedRadio.Patches
                 network = radioNetwork,
                 name = new DirectoryInfo(path).Name,
                 description = "A cutome Radio",
-                icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"),//"Media/Radio/Stations/TheVibe.svg";
+                icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"), //"Media/Radio/Stations/TheVibe.svg";
                 uiPriority = 1,
                 programs = [program]
             };

@@ -24,7 +24,6 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<!-- Suppress the version conflict warnings for System.Net.Http and System.IO.Compression -->
 		<NoWarn>MSB3277</NoWarn>
-		<NoWarn>MSB3106</NoWarn>
 	</PropertyGroup>
 
 	<!--

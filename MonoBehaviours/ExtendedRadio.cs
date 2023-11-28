@@ -119,27 +119,27 @@ namespace ExtendedRadio.MonoBehaviours
 			}
 		}
 
-		private static bool GetTimeTag(Track trackMeta, string tag, out double time)
-		{
-			if (trackMeta.AdditionalFields.TryGetValue(tag, out var value) && double.TryParse(value, out time))
-			{
-				return true;
-			}
+		// private static bool GetTimeTag(Track trackMeta, string tag, out double time)
+		// {
+		// 	if (trackMeta.AdditionalFields.TryGetValue(tag, out var value) && double.TryParse(value, out time))
+		// 	{
+		// 		return true;
+		// 	}
 
-			time = -1.0;
-			return false;
-		}
+		// 	time = -1.0;
+		// 	return false;
+		// }
 
-		private static bool GetTimeTag(Track trackMeta, string tag, out float time)
-		{
-			if (trackMeta.AdditionalFields.TryGetValue(tag, out var value) && float.TryParse(value, out time))
-			{
-				return true;
-			}
+		// private static bool GetTimeTag(Track trackMeta, string tag, out float time)
+		// {
+		// 	if (trackMeta.AdditionalFields.TryGetValue(tag, out var value) && float.TryParse(value, out time))
+		// 	{
+		// 		return true;
+		// 	}
 
-			time = -1f;
-			return false;
-		}
+		// 	time = -1f;
+		// 	return false;
+		// }
 
 		// public AudioClip GetRandomClip( )
 		// {

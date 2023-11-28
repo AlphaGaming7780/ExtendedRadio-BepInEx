@@ -5,8 +5,6 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 #if BEPINEX_V6
