@@ -110,7 +110,7 @@ namespace ExtendedRadio.MonoBehaviours
 					
 					audioAssets.Add(audioAsset);
 
-					Debug.Log( "Loaded audio clip: " + audioAsset.GetMetaTag(Metatag.Title)  );
+					// Debug.Log( "Loaded audio clip: " + audioAsset.GetMetaTag(Metatag.Title)  );
 				}
 				else
 				{

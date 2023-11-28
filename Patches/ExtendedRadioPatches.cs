@@ -1,59 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Colossal.IO.AssetDatabase;
 using ExtendedRadio.MonoBehaviours;
-using Game;
-using Game.Audio;
 using Game.Audio.Radio;
-using Game.Notifications;
+using Game.SceneFlow;
+using Game.UI;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio.Patches
 {
+	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
+    internal class GameManager_InitializeThumbnails
+    {
+		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}ui";
 
-	/// <summary>
-	/// An example patch
-	/// </summary>
-	/// <remarks>
-	/// (So far the best way I've found to determine when the game AND map is fully loaded.)
-	/// </remarks>
-	[HarmonyPatch( typeof( AudioManager ), "OnGameLoadingComplete" )]
-	class AudioManager_OnGameLoadingCompletePatch
-	{
-		static void Postfix( AudioManager __instance, Colossal.Serialization.Entities.Purpose purpose, GameMode mode )
-		{
-			if ( !mode.IsGameOrEditor( ) )
-				return;
-
-			UnityEngine.Debug.Log( "Game loaded!" );
-
-			//__instance.World.GetOrCreateSystem<ExtendedRadioSystem>( );
+		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
+        static void Prefix(GameManager __instance)
+        {	
+			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
+            
+			if (gameUIResourceHandler == null)
+            {
+                Debug.LogError("Failed retrieving GameManager's GameUIResourceHandler instance, exiting.");
+                return;
+            }
+            // Debug.Log("Retrieved GameManager's GameUIResourceHandler instance.");
+			
+			gameUIResourceHandler.HostLocationsMap.Add(
+                IconsResourceKey,
+                new List<string> {
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                }
+            );
 		}
 	}
-
-	/// <summary>
-	/// Used to load songs before the map is loaded.
-	/// </summary>
-	/// <remarks>
-	/// (Could be more robust, may encounter errors as is
-	/// if loading is too slow.)
-	/// </remarks>
-	// [HarmonyPatch( typeof( AudioManager ), "OnGameLoaded" )]
-	// class AudioManager_OnGameLoadedPatch
-	// {
-	//     static bool Prefix(AudioManager __instance, Colossal.Serialization.Entities.Context serializationContext )
-	//     {
-	//         Debug.Log("Prefix");
-	//         var musicLoader = new GameObject( "MusicLoader" );
-	//         musicLoader.AddComponent<RadioLoader>( ); // Our custom music loader
-	//         RadioLoader radioLoader = musicLoader.GetComponent<RadioLoader>();
-	//         radioLoader.Setup(__instance.radio);
-	//         return true;
-	//     }
-	// }
 
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
@@ -70,7 +55,7 @@ namespace ExtendedRadio.Patches
 			Traverse radioTravers = Traverse.Create(__instance);
 			MusicLoader loader;
 
-			Debug.Log("Loading Radio");
+			// Debug.Log("Loading Radio");
 
 			loader = musicLoader.AddComponent<MusicLoader>( ); // Our custom music loader
 			musicLoader.tag = "MusicLoader";
@@ -88,24 +73,27 @@ namespace ExtendedRadio.Patches
 			foreach(string radioNetwork in Directory.GetDirectories( radioDirectory )) {
 				if(radioNetwork != radioDirectory) {
 					if(Directory.GetFiles(radioNetwork, "*.ogg").Count() == 0) {
-						Debug.Log("Creating Network : " + new DirectoryInfo(radioNetwork).Name);
-						string iconPath = Path.Combine(radioNetwork, "icon.svg");
+						// Debug.Log("Creating Network : " + new DirectoryInfo(radioNetwork).Name);
+
 						RadioNetwork network = new()
 						{
 							name = new DirectoryInfo(radioNetwork).Name,
 							nameId = new DirectoryInfo(radioNetwork).Name,
-							description = "A custom radio",
-							descriptionId = "A custom radio",
-							icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"),// "Media/Radio/Networks/Commercial.svg",
+							description = "A custom Network",
+							descriptionId = "A custom Network",
+							icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/DefaultIcon.svg",
 							uiPriority = radioNetworkIndex++,
 							allowAds = true
 						};
-						customeNetwork.Add(network.name);
-						m_Networks.Add(network.name, network);
+						
+						if(!m_Networks.ContainsKey(network.name)) {
+							customeNetwork.Add(network.name);
+							m_Networks.Add(network.name, network);
+						}
 						
 						foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
 							if(radioStation != radioNetwork) {
-								Debug.Log("Creating Radio : " + new DirectoryInfo(radioStation).Name);
+								// Debug.Log("Creating Radio : " + new DirectoryInfo(radioStation).Name);
 								RadioChannel radioChannel = createRadioStation(radioStation, network.name);
 								string text = radioChannel.name;
 								while (m_RadioChannels.ContainsKey(text))
@@ -117,7 +105,7 @@ namespace ExtendedRadio.Patches
 							}
 						}
 					} else {
-						Debug.Log("Creating Radio : " + new DirectoryInfo(radioNetwork).Name);
+						// Debug.Log("Creating Radio : " + new DirectoryInfo(radioNetwork).Name);
 						RadioChannel radioChannel = createRadioStation(radioNetwork, "Public Citizen Radio");
 						string text = radioChannel.name;
 						while (m_RadioChannels.ContainsKey(text))
@@ -174,14 +162,14 @@ namespace ExtendedRadio.Patches
                 segments = [segment]
             };
 
-            string iconPath = Path.Combine(path, "icon.svg");
+			string iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio{(customeNetwork.Contains(radioNetwork) ? $"/{radioNetwork}" : "" )}/{new DirectoryInfo(path).Name}/icon.svg";
 
             RadioChannel radioChannel = new()
             {
                 network = radioNetwork,
                 name = new DirectoryInfo(path).Name,
                 description = "A cutome Radio",
-                icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"), //"Media/Radio/Stations/TheVibe.svg";
+                icon = File.Exists(Path.Combine(path, "icon.svg")) ? iconPath : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/DefaultIcon.svg", //"Media/Radio/Stations/TheVibe.svg";
                 uiPriority = 1,
                 programs = [program]
             };
@@ -196,7 +184,7 @@ namespace ExtendedRadio.Patches
 	{
 		static bool Prefix( Radio __instance, RuntimeSegment segment)
 		{	
-			Debug.Log("Radio Network : " + __instance.currentChannel.network + " | Radio Channel : " + __instance.currentChannel.name);
+			// Debug.Log("Radio Network : " + __instance.currentChannel.network + " | Radio Channel : " + __instance.currentChannel.name);
 		
 			if(Radio_LoadRadio.customeRadioChannel.Contains(__instance.currentChannel.name)) {
 				// string path = Radio_LoadRadio.radioDirectory;
