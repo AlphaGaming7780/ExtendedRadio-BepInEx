@@ -1,4 +1,4 @@
-name: mycoolmod-ci
+name: RadioExtended-ci
 
 on:
   push:
