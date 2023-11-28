@@ -32,7 +32,7 @@ jobs:
           filename: 'ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip'
           path: dist
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.13.0
         with:
           tag: ${{ github.ref_name }}
           allowUpdates: true
