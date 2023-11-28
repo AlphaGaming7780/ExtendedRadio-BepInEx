@@ -85,7 +85,9 @@ jobs:
         with:
           path: .
       - name: 'Echo download path'
-        run: echo ${{steps.download.outputs.download-path}}
+        run: |
+          echo ${{steps.download.outputs.download-path}}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5
+          echo ${{steps.download.outputs.download-path}}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
