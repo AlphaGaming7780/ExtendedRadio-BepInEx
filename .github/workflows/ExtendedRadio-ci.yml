@@ -15,9 +15,9 @@ jobs:
         bepinex-version: [5, 6]
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout libcs2
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: AlphaGaming7780/libcs2
           token: ${{ secrets.GH_PAT }}
@@ -30,8 +30,9 @@ jobs:
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
       - name: Coping All the default elements
         run: |
-          cp -a /home/runner/work/ExtendedRadio/ExtendedRadio/Icons/. /home/runner/work/ExtendedRadio/ExtendedRadio/dist/
-          mv /home/runner/work/ExtendedRadio/ExtendedRadio/dist "/home/runner/work/ExtendedRadio/ExtendedRadio/${{ github.event.repository.name }}"
+          mkdir -p ${{ GITHUB_WORKSPACE }}/dist/resources/;
+          cp -a /home/runner/work/ExtendedRadio/ExtendedRadio/resources/. /home/runner/work/ExtendedRadio/ExtendedRadio/dist/resources/
+          mv "${{ GITHUB_WORKSPACE }}/dist" "${{ GITHUB_WORKSPACE }}/${{ github.event.repository.name }}"
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:
@@ -43,6 +44,7 @@ jobs:
         with:
           tag: ${{ github.ref_name }}
           allowUpdates: true
+          removeArtifacts: true
           artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true

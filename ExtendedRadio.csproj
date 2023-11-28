@@ -35,10 +35,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Icons\DefaultIcon.svg" />
+		<None Remove="resources\DefaultIcon.svg" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="Icons\DefaultIcon.svg">
+		<Content Include="resources\DefaultIcon.svg">
 		  	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
@@ -118,6 +118,6 @@
 	-->
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CI)' != 'true'">
 		<Exec
-			Command="if not exist &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)0Harmony.dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\0Harmony.dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)Icons&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\&quot;" />
+			Command="if not exist &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)0Harmony.dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\0Harmony.dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).dll&quot;&#xD;&#xA;if not exist &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)resources&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources\&quot;" />
 	</Target>
 </Project>

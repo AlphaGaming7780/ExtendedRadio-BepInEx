@@ -79,7 +79,7 @@ namespace ExtendedRadio.Patches
 							nameId = new DirectoryInfo(radioNetwork).Name,
 							description = "A custom Network",
 							descriptionId = "A custom Network",
-							icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/DefaultIcon.svg",
+							icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg",
 							uiPriority = radioNetworkIndex++,
 							allowAds = true
 						};
@@ -151,7 +151,7 @@ namespace ExtendedRadio.Patches
                 network = radioNetwork,
                 name = new DirectoryInfo(path).Name,
                 description = "A cutome Radio",
-                icon = File.Exists(Path.Combine(path, "icon.svg")) ? iconPath : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/DefaultIcon.svg", //"Media/Radio/Stations/TheVibe.svg";
+                icon = File.Exists(Path.Combine(path, "icon.svg")) ? iconPath : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg", //"Media/Radio/Stations/TheVibe.svg";
                 uiPriority = 1,
                 programs = [program]
             };
