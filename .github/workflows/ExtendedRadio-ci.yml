@@ -39,11 +39,11 @@ jobs:
           type: 'zip'
           filename: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           path: "${{ github.event.repository.name }}"
-      - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
-        uses: actions/upload-artifact@v3
-        with:
-          name: built-code-${{ matrix.bepinex-version }}
-          path: dist/*.dll
+      # - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: built-code-${{ matrix.bepinex-version }}
+      #     path: dist/*.dll
       - name: Upload Artifact (Zip Release BepInEx ${{ matrix.bepinex-version }})
         uses: actions/upload-artifact@v3
         with:
@@ -57,11 +57,19 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Download built artifact
+      - name: Download Zip artifact
         uses: actions/download-artifact@v3
+        id: download
         with:
-          name: built-code-5
-          path: dist/
+          name: ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5
+          path: .
+      - name: Debug
+        run: ls -R
+      - name: Unzip fill
+        run: |
+          unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+          rm ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+          mv ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5 ${{ github.workspace }}/dist
       - name: Debug
         run: ls && ls dist/
       - name: Download tcli
@@ -70,6 +78,7 @@ jobs:
           tar -xzf tcli.tar.gz
       - name: Publish with tcli
         run: ./tcli-0.2.1-linux-x64/tcli publish --token=${{ secrets.TS_TOKEN }}
+
 
   Release:
     needs: publish
@@ -84,8 +93,6 @@ jobs:
         id: download
         with:
           path: .
-      - name: Display structure of downloaded files
-        run: ls -R
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
