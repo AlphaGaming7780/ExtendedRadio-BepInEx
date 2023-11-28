@@ -39,22 +39,12 @@ jobs:
           type: 'zip'
           filename: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           path: "${{ github.event.repository.name }}"
-      - name: Create Release
-        uses: ncipollo/release-action@v1.13.0
-        with:
-          tag: ${{ github.ref_name }}
-          allowUpdates: true
-          removeArtifacts: true
-          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       # - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
       #   uses: actions/upload-artifact@v3
       #   with:
       #     name: built-code-${{ matrix.bepinex-version }}
       #     path: dist/*.dll
+
   # publish:
   #   needs: build
   #   if: startsWith(github.ref, 'refs/tags/v')
@@ -75,4 +65,24 @@ jobs:
   #         tar -xzf tcli.tar.gz
   #     - name: Publish with tcli
   #       run: ./tcli-0.2.1-linux-x64/tcli publish --token=${{ secrets.TS_TOKEN }}
+
+  Release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Create Release
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          tag: ${{ github.ref_name }}
+          allowUpdates: true
+          removeArtifacts: true
+          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip"
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
 
