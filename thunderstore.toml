@@ -2,10 +2,10 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "CaptainOfCoit"
-name = "MyCoolMod"
+namespace = "TritonSupreme"
+name = "ExtendedRadio"
 versionNumber = "0.1.0"
-description = "Example mod description"
+description = "A mod to improve the game's radio."
 websiteUrl = "https://thunderstore.io"
 containsNsfwContent = false
 
