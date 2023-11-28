@@ -20,4 +20,4 @@ outdir = "./ts-build"
 [publish]
 repository = "https://thunderstore.io"
 communities = [ "cities-skylines-ii", ]
-categories = [ "mods" "audio"]
+categories = [ "mods", "audio"]
