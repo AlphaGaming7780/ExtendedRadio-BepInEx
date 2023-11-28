@@ -44,6 +44,11 @@ jobs:
       #   with:
       #     name: built-code-${{ matrix.bepinex-version }}
       #     path: dist/*.dll
+      - name: Upload Artifact (Zip Release BepInEx ${{ matrix.bepinex-version }})
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}
+          path: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip
 
   # publish:
   #   needs: build
@@ -74,6 +79,11 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
+      - name: Download Zip artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5, ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6"
+          path: dist/
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
