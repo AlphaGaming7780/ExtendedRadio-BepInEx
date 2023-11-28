@@ -6,6 +6,7 @@ using ExtendedRadio.MonoBehaviours;
 using Game;
 using Game.Audio;
 using Game.Audio.Radio;
+using Game.Notifications;
 using HarmonyLib;
 using UnityEngine;
 using static Game.Audio.Radio.Radio;
@@ -77,7 +78,7 @@ namespace ExtendedRadio.Patches
 
 			
 			
-			Directory.CreateDirectory(radioDirectory);
+			// Directory.CreateDirectory(radioDirectory);
 
 			Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
 			Dictionary<string, RuntimeRadioChannel> m_RadioChannels = Traverse.Create(__instance).Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>();
@@ -161,24 +162,30 @@ namespace ExtendedRadio.Patches
 			segment.clips = audioAsset;
 			segment.tags = ["type:Music","radio channel:" + new DirectoryInfo(path).Name];
 
-			Program program = new();
-			program.name = "test";
-			program.description = "test";
-			program.icon = "coui://UIResources/Media/Radio/TheVibe.svg";
-			program.startTime = "00:00";
-			program.endTime = "00:00";
-			program.loopProgram = true;
-			program.segments = [segment];
+            Program program = new()
+            {
+                name = "My Custom Program",
+                description = "My Custom Program",
+                icon = "coui://UIResources/Media/Radio/TheVibe.svg",
+                startTime = "00:00",
+                endTime = "00:00",
+                loopProgram = true,
+                segments = [segment]
+            };
 
-			RadioChannel radioChannel = new();
-			radioChannel.network = radioNetwork;
-			radioChannel.name = new DirectoryInfo(path).Name;
-			radioChannel.description = "A cutome Radio";
-			radioChannel.icon = "Media/Radio/Stations/TheVibe.svg";
-			radioChannel.uiPriority = 1;
-			radioChannel.programs = [program];
+            string iconPath = Path.Combine(path, "icon.svg");
 
-			return radioChannel;
+            RadioChannel radioChannel = new()
+            {
+                network = radioNetwork,
+                name = new DirectoryInfo(path).Name,
+                description = "A cutome Radio",
+                icon = File.Exists(iconPath) ? iconPath : Path.Combine(radioDirectory, "icon.svg"),//"Media/Radio/Stations/TheVibe.svg";
+                uiPriority = 1,
+                programs = [program]
+            };
+
+            return radioChannel;
 
 		}
 	}
