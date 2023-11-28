@@ -31,8 +31,8 @@ jobs:
       - name: Coping All the default elements
         run: |
           mkdir -p  ${{ github.workspace }}/dist/resources/;
-          cp -a /home/runner/work/ExtendedRadio/ExtendedRadio/resources/. /home/runner/work/ExtendedRadio/ExtendedRadio/dist/resources/
-          mv " ${{ github.workspace }}/dist" " ${{ github.workspace }}/${{ github.event.repository.name }}"
+          cp -a ${{ github.workspace }}/resources/. ${{ github.workspace }}/dist/resources/
+          mv ${{ github.workspace }}/dist ${{ github.workspace }}/${{ github.event.repository.name }}
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:
