@@ -9,12 +9,12 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
-		<AssemblyName>MyCoolMod</AssemblyName>
-		<RootNamespace>MyCoolMod</RootNamespace>
+		<AssemblyName>ExtendedRadio</AssemblyName>
+		<RootNamespace>ExtendedRadio</RootNamespace>
 		<Description>A mod that I made for Cities: Skylines 2</Description>
 		<Version>0.1.0</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<LangVersion>latest</LangVersion>
+		<LangVersion>preview</LangVersion>
 		<RestoreAdditionalProjectSources>
 			https://api.nuget.org/v3/index.json;
 			https://nuget.bepinex.dev/v3/index.json;
@@ -24,6 +24,7 @@
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<!-- Suppress the version conflict warnings for System.Net.Http and System.IO.Compression -->
 		<NoWarn>MSB3277</NoWarn>
+		<NoWarn>MSB3106</NoWarn>
 	</PropertyGroup>
 
 	<!--
@@ -86,7 +87,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(BepInExVersion)' == '5'">
-		<PackageReference Include="BepInEx.Core" Version="5.4.21" IncludeAssets="compile"/>
+		<PackageReference Include="BepInEx.Core" Version="5.4.*" IncludeAssets="compile"/>
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(BepInExVersion)' == '6'">
