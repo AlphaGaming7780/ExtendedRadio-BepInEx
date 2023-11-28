@@ -1,9 +1,8 @@
 name: RadioExtended-ci
 
 on:
-  push:
-    branches: [ "master" ]
-    # tags: [ "v*" ]
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -35,6 +34,7 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
+          tag: ${{ github.ref_name }}
           allowUpdates: true
           artifacts: "ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip"
           omitNameDuringUpdate: true
@@ -66,17 +66,4 @@ jobs:
   #         tar -xzf tcli.tar.gz
   #     - name: Publish with tcli
   #       run: ./tcli-0.2.1-linux-x64/tcli publish --token=${{ secrets.TS_TOKEN }}
-  Release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-      - name: Download built artifact
-        uses: actions/download-artifact@v3
-      - name: Create Release
-        uses: ncipollo/release-action@v1.13.0
-        with:
-          artifacts: "dist/built-code-5,dist/built-code-6"
-          bodyFile: "body.md"
 
