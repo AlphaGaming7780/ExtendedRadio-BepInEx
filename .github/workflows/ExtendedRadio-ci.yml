@@ -92,7 +92,7 @@ jobs:
           tag: ${{ github.ref_name }}
           allowUpdates: true
           removeArtifacts: true
-          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6.zip"
+          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6.zip"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
