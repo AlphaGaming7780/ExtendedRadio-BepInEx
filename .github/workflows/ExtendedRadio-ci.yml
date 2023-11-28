@@ -2,7 +2,7 @@ name: RadioExtended-ci
 
 on:
   push:
-    branches: [ "master" ]
+    # branches: [ "master" ]
     tags: [ "v*" ]
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
       - name: Coping All the default elements
         run: |
-          cp -a /Icon/. /dist/
+          cp -a "Icon/." /dist/
           mv dist "${{ github.event.repository.name }}"
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
