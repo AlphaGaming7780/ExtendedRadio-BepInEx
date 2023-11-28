@@ -82,14 +82,14 @@ jobs:
       - name: Download Zip artifact
         uses: actions/download-artifact@v3
         with:
-          path: dist/
+          path: zip/
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
           tag: ${{ github.ref_name }}
           allowUpdates: true
           removeArtifacts: true
-          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip"
+          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
