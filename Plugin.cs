@@ -1,7 +1,4 @@
-﻿using System.IO.Compression;
-using System.IO;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;

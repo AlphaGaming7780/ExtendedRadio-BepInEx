@@ -6,7 +6,7 @@ namespace = "TritonSupreme"
 name = "ExtendedRadio"
 versionNumber = "0.1.0"
 description = "A mod to improve the game's radio."
-websiteUrl = "https://thunderstore.io"
+websiteUrl = "https://github.com/AlphaGaming7780/ExtendedRadio"
 containsNsfwContent = false
 
 [package.dependencies]

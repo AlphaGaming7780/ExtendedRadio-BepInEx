@@ -53,12 +53,10 @@ namespace ExtendedRadio.Patches
 		static void Postfix( Radio __instance) {
 
 			Traverse radioTravers = Traverse.Create(__instance);
-			MusicLoader loader;
 
 			// Debug.Log("Loading Radio");
 
-			loader = musicLoader.AddComponent<MusicLoader>( ); // Our custom music loader
-			musicLoader.tag = "MusicLoader";
+			musicLoader.AddComponent<MusicLoader>( ); // Our custom music loader
 			// musicLoader.GetComponent<MusicLoader>().Setup();
 
 			
@@ -121,35 +119,19 @@ namespace ExtendedRadio.Patches
 			radioTravers.Field("m_Networks").SetValue(m_Networks);
 			radioTravers.Field("m_RadioChannels").SetValue(m_RadioChannels);
 			radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
-
-			// Debug.Log("Now Printing the value of m_Networks");
-			// try {
-			// 	foreach((string name, RadioNetwork radioNetwork) in radioTravers.Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>()) {
-			// 		Debug.Log(name);
-			// 	}
-			// } catch {
-			// 	Debug.LogWarning("Failled to print the value");
-			// }
-			// Debug.Log("Now Printing the value of m_RadioChannels");
-			// try {
-			// 	foreach((string name, RuntimeRadioChannel runtimeRadioChannel) in radioTravers.Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>()) {
-			// 		Debug.Log(name);
-			// 	}
-			// } catch {
-			// 	Debug.LogWarning("Failled to print the value");
-			// }
-
 		}
 
 		private static RadioChannel createRadioStation( string path, string radioNetwork) {
 			
 			AudioAsset[] audioAsset = musicLoader.GetComponent<MusicLoader>().LoadAllAudioClips(path, new DirectoryInfo(path).Name , radioNetwork); // , radioNetwork, new DirectoryInfo(path).Name
 
-			Segment segment = new();
-			segment.type = SegmentType.Playlist;
-			segment.clipsCap = 2;
-			segment.clips = audioAsset;
-			segment.tags = ["type:Music","radio channel:" + new DirectoryInfo(path).Name];
+            Segment segment = new()
+            {
+                type = SegmentType.Playlist,
+                clipsCap = 2,
+                clips = audioAsset,
+                tags = ["type:Music", "radio channel:" + new DirectoryInfo(path).Name]
+            };
 
             Program program = new()
             {
