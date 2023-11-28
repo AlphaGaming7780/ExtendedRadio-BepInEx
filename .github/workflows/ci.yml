@@ -36,7 +36,7 @@ jobs:
         with:
           tag: ${{ github.ref_name }}
           allowUpdates: true
-          artifacts: "ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip"
+          artifacts: "ExtendedRadio-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
