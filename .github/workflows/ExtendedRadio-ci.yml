@@ -28,18 +28,22 @@ jobs:
           dotnet-version: 6.0.x
       - name: Build (BepInEx ${{ matrix.bepinex-version }})
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
+      - name: Coping All the default elements
+        run: |
+          cp -a /Icon/. /dist/
+          mv dist "${{ github.event.repository.name }}"
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
-          filename: "ExtendedRadio-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
-          path: dist
+          filename: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
+          path: "${{ github.event.repository.name }}"
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
           tag: ${{ github.ref_name }}
           allowUpdates: true
-          artifacts: "ExtendedRadio-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
+          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
