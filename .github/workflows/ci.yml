@@ -30,7 +30,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
-          filename: 'ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip'
+          filename: "ExtendedRadio-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           path: dist
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
