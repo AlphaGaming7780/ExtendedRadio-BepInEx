@@ -30,8 +30,8 @@ jobs:
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
       - name: Coping All the default elements
         run: |
-          cp -a /home/runner/work/ExtendedRadio/ExtendedRadio/Icons/. /dist/
-          mv dist "${{ github.event.repository.name }}"
+          cp -a /home/runner/work/ExtendedRadio/ExtendedRadio/Icons/. /home/runner/work/ExtendedRadio/ExtendedRadio/dist/
+          mv /home/runner/work/ExtendedRadio/ExtendedRadio/dist "/home/runner/work/ExtendedRadio/ExtendedRadio/${{ github.event.repository.name }}"
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:

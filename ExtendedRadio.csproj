@@ -36,12 +36,12 @@
 
 	<ItemGroup>
 		<None Remove="Icons\DefaultIcon.svg" />
-	  </ItemGroup>
-	  <ItemGroup>
+	</ItemGroup>
+	<ItemGroup>
 		<Content Include="Icons\DefaultIcon.svg">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	  </ItemGroup>
+	</ItemGroup>
 
 	<!--
 		This is all the references to the DLLs directly from your game directory. The Cities2_Location property
@@ -54,12 +54,12 @@
 		<Reference Include="cohtml.Net"><HintPath>$(Cities2_Location)\Cities2_Data\Managed\cohtml.Net.dll</HintPath><Private>False</Private></Reference>
 	</ItemGroup>
 
-	<!--
-		If you want to embed things directly into your mod, instead of shipping multiple files
-	<ItemGroup>
-	  <EmbeddedResource Include="./resources/my_pretty_embedded_image.jpg" />
-	</ItemGroup>
-	-->
+	
+		<!-- If you want to embed things directly into your mod, instead of shipping multiple files -->
+	<!-- <ItemGroup>
+	  <EmbeddedResource Include="./resources/DefaultIcon.svg" />
+	</ItemGroup> -->
+	
 
 	<!--
 		This ItemGroup is used in CI for the game DLLs.
