@@ -3,7 +3,7 @@ name: RadioExtended-ci
 on:
   push:
     branches: [ "master" ]
-    tags: [ "v*" ]
+    # tags: [ "v*" ]
 
 jobs:
   build:
@@ -26,28 +26,57 @@ jobs:
           dotnet-version: 6.0.x
       - name: Build (BepInEx ${{ matrix.bepinex-version }})
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
-      - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
-        uses: actions/upload-artifact@v3
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.5
         with:
-          name: built-code-${{ matrix.bepinex-version }}
-          path: dist/*.dll
-  publish:
+          type: 'zip'
+          filename: 'ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip'
+          path: dist
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "ExtendedRadio_BepInEx-${{ matrix.bepinex-version }}_.zip"
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: built-code-${{ matrix.bepinex-version }}
+      #     path: dist/*.dll
+  # publish:
+  #   needs: build
+  #   if: startsWith(github.ref, 'refs/tags/v')
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout source
+  #       uses: actions/checkout@v3
+  #     - name: Download built artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: built-code-5
+  #         path: dist/
+  #     - name: Debug
+  #       run: ls && ls dist/
+  #     - name: Download tcli
+  #       run: |
+  #         curl -L https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.2.1/tcli-0.2.1-linux-x64.tar.gz -o tcli.tar.gz
+  #         tar -xzf tcli.tar.gz
+  #     - name: Publish with tcli
+  #       run: ./tcli-0.2.1-linux-x64/tcli publish --token=${{ secrets.TS_TOKEN }}
+  Release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
       - name: Download built artifact
         uses: actions/download-artifact@v3
+      - name: Create Release
+        uses: ncipollo/release-action@v1.13.0
         with:
-          name: built-code-5
-          path: dist/
-      - name: Debug
-        run: ls && ls dist/
-      - name: Download tcli
-        run: |
-          curl -L https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.2.1/tcli-0.2.1-linux-x64.tar.gz -o tcli.tar.gz
-          tar -xzf tcli.tar.gz
-      - name: Publish with tcli
-        run: ./tcli-0.2.1-linux-x64/tcli publish --token=${{ secrets.TS_TOKEN }}
+          artifacts: "dist/built-code-5,dist/built-code-6"
+          bodyFile: "body.md"
+
