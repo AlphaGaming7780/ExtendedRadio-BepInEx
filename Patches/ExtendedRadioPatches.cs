@@ -24,6 +24,13 @@ namespace ExtendedRadio.Patches
 
 			Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio"));
 
+			string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
+
+			if(!Directory.Exists(resources)) {
+				Directory.CreateDirectory(resources);
+				File.Move(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DefaultIcon.svg"), Path.Combine(resources , "DefaultIcon.svg"));
+			}
+
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
             
 			if (gameUIResourceHandler == null)
@@ -44,7 +51,8 @@ namespace ExtendedRadio.Patches
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
 
-		public static GameObject musicLoader = new( "MusicLoader" );
+		public static GameObject gameObjectmusicLoader = new( "MusicLoader" );
+		public static MusicLoader musicLoader = gameObjectmusicLoader.AddComponent<MusicLoader>( );
 		public static string radioDirectory = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CustomRadio");
 
 		public static List<string> customeRadioChannel = [];
@@ -53,8 +61,6 @@ namespace ExtendedRadio.Patches
 		static void Postfix( Radio __instance) {
 
 			Traverse radioTravers = Traverse.Create(__instance);
-
-			musicLoader.AddComponent<MusicLoader>( );
 
 			Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
 			Dictionary<string, RuntimeRadioChannel> m_RadioChannels = Traverse.Create(__instance).Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>();
@@ -83,25 +89,15 @@ namespace ExtendedRadio.Patches
 						
 						foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
 							if(radioStation != radioNetwork) {
-								RadioChannel radioChannel = createRadioStation(radioStation, network.name);
-								string text = radioChannel.name;
-								while (m_RadioChannels.ContainsKey(text))
-								{
-									text = text + "_" + radioTravers.Method("MakeUniqueRandomName", text, 4).GetValue<string>();
-								}
+								RadioChannel radioChannel = createRadioStation(radioStation, network.name, m_RadioChannels, radioTravers);
 								customeRadioChannel.Add(radioChannel.name);
-								m_RadioChannels.Add(text, radioChannel.CreateRuntime(radioStation));
+								m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
 							}
 						}
 					} else {
-						RadioChannel radioChannel = createRadioStation(radioNetwork, "Public Citizen Radio");
-						string text = radioChannel.name;
-						while (m_RadioChannels.ContainsKey(text))
-						{
-							text = text + "_" + radioTravers.Method("MakeUniqueRandomName", text, 4).GetValue<string>();
-						}
+						RadioChannel radioChannel = createRadioStation(radioNetwork, "Public Citizen Radio", m_RadioChannels, radioTravers);
 						customeRadioChannel.Add(radioChannel.name);
-						m_RadioChannels.Add(text, radioChannel.CreateRuntime(radioNetwork));
+						m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioNetwork));
 					}
 				}
 			}
@@ -111,16 +107,22 @@ namespace ExtendedRadio.Patches
 			radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
 		}
 
-		private static RadioChannel createRadioStation( string path, string radioNetwork) {
+		private static RadioChannel createRadioStation( string path, string radioNetwork, Dictionary<string, RuntimeRadioChannel> m_RadioChannels, Traverse radioTravers) {
 			
-			AudioAsset[] audioAsset = musicLoader.GetComponent<MusicLoader>().LoadAllAudioClips(path, new DirectoryInfo(path).Name , radioNetwork); // , radioNetwork, new DirectoryInfo(path).Name
+			string radioName = new DirectoryInfo(path).Name;
+			while (m_RadioChannels.ContainsKey(radioName))
+			{
+				radioName = radioName + "_" + radioTravers.Method("MakeUniqueRandomName", radioName, 4).GetValue<string>();
+			}
+			
+			AudioAsset[] audioAssets = musicLoader.LoadAllAudioClips(path, radioName , radioNetwork);
 
             Segment segment = new()
             {
                 type = SegmentType.Playlist,
-                clipsCap = 2,
-                clips = audioAsset,
-                tags = ["type:Music", "radio channel:" + new DirectoryInfo(path).Name]
+                clipsCap = audioAssets.Length,
+                clips = audioAssets,
+                tags = ["type:Music", "radio channel:" + radioName]
             };
 
             Program program = new()
@@ -134,17 +136,20 @@ namespace ExtendedRadio.Patches
                 segments = [segment]
             };
 
-			string iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio{(customeNetwork.Contains(radioNetwork) ? $"/{radioNetwork}" : "" )}/{new DirectoryInfo(path).Name}/icon.svg";
+			string iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio{(customeNetwork.Contains(radioNetwork) ? $"/{radioNetwork}" : "" )}/{radioName}/icon.svg";
 
             RadioChannel radioChannel = new()
             {
                 network = radioNetwork,
-                name = new DirectoryInfo(path).Name,
+                name = radioName,
+				nameId = radioName,
                 description = "A cutome Radio",
                 icon = File.Exists(Path.Combine(path, "icon.svg")) ? iconPath : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg", //"Media/Radio/Stations/TheVibe.svg";
                 uiPriority = 1,
                 programs = [program]
             };
+
+			musicLoader.AddToDataBase(radioChannel);
 
             return radioChannel;
 
@@ -155,18 +160,23 @@ namespace ExtendedRadio.Patches
 	class Radio_GetPlaylistClips
 	{
 		static bool Prefix( Radio __instance, RuntimeSegment segment)
-		{	
-			// Debug.Log("Radio Network : " + __instance.currentChannel.network + " | Radio Channel : " + __instance.currentChannel.name);
-		
+		{		
 			if(Radio_LoadRadio.customeRadioChannel.Contains(__instance.currentChannel.name)) {
 
-				// ADD here the randomizer for audioclip.
+				IEnumerable<AudioAsset> assets = Radio_LoadRadio.musicLoader.GetAudiAssets(__instance, segment.type);
+				List<AudioAsset> list = [.. assets];
+				System.Random rnd = new();
+				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
+								orderby rnd.Next()
+								select x).Take(segment.clipsCap).ToList();
+				AudioAsset[] array = new AudioAsset[segment.clipsCap];
+				for (int i = 0; i < array.Length; i++)
+				{
+					array[i] = list[list2[i]];
+				}
 
-				// string path = Radio_LoadRadio.radioDirectory;
-				// path = Radio_LoadRadio.customeNetwork.Contains(__instance.currentChannel.network) ? Path.Combine(path, __instance.currentChannel.network) : path;
-				// path = Path.Combine(path, __instance.currentChannel.name);
+				segment.clips = array;
 
-				// segment.clips = Radio_LoadRadio.musicLoader.GetComponent<MusicLoader>().LoadAllAudioClips(path, __instance.currentChannel.name, __instance.currentChannel.network);
 				return false;
 			}
 			return true;

@@ -12,7 +12,7 @@
 		<AssemblyName>ExtendedRadio</AssemblyName>
 		<RootNamespace>ExtendedRadio</RootNamespace>
 		<Description>A mod that I made for Cities: Skylines 2</Description>
-		<Version>0.1.1</Version>
+		<Version>0.2.0</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>preview</LangVersion>
 		<RestoreAdditionalProjectSources>
@@ -79,7 +79,6 @@
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.0.0" />
 		<PackageReference Include="HarmonyX" Version="2.10.2"></PackageReference>
 		<PackageReference Include="UnityEngine.Modules" Version="2022.3.7" IncludeAssets="compile" />
-		<PackageReference Include="TagLibSharp" Version="2.3.0" />
 	</ItemGroup>
 
 	<!-- Set the default value for BepInExVersion -->
@@ -120,7 +119,6 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CI)' != 'true'">
 		<Exec
 			Command="if not exist &quot; $(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot;&#xD;&#xA;
-					copy /Y &quot;$(TargetDir)TagLibSharp.dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\TagLibSharp.dll&quot;&#xD;&#xA;
 					copy /Y &quot;$(TargetDir)0Harmony.dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\0Harmony.dll&quot;&#xD;&#xA;
 					copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).dll&quot;&#xD;&#xA;
 					if not exist &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot;&#xD;&#xA;
