@@ -9,7 +9,6 @@ using Game.SceneFlow;
 using Game.UI;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio.Patches
@@ -21,7 +20,10 @@ namespace ExtendedRadio.Patches
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
         static void Prefix(GameManager __instance)
-        {	
+        {		
+
+			Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio"));
+
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
             
 			if (gameUIResourceHandler == null)
@@ -29,7 +31,6 @@ namespace ExtendedRadio.Patches
                 Debug.LogError("Failed retrieving GameManager's GameUIResourceHandler instance, exiting.");
                 return;
             }
-            // Debug.Log("Retrieved GameManager's GameUIResourceHandler instance.");
 			
 			gameUIResourceHandler.HostLocationsMap.Add(
                 IconsResourceKey,
@@ -43,7 +44,6 @@ namespace ExtendedRadio.Patches
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
 
-		// private static bool isGameObjectAlreadycreated = false;
 		public static GameObject musicLoader = new( "MusicLoader" );
 		public static string radioDirectory = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CustomRadio");
 
@@ -54,14 +54,7 @@ namespace ExtendedRadio.Patches
 
 			Traverse radioTravers = Traverse.Create(__instance);
 
-			// Debug.Log("Loading Radio");
-
-			musicLoader.AddComponent<MusicLoader>( ); // Our custom music loader
-			// musicLoader.GetComponent<MusicLoader>().Setup();
-
-			
-			
-			// Directory.CreateDirectory(radioDirectory);
+			musicLoader.AddComponent<MusicLoader>( );
 
 			Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
 			Dictionary<string, RuntimeRadioChannel> m_RadioChannels = Traverse.Create(__instance).Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>();
@@ -71,7 +64,6 @@ namespace ExtendedRadio.Patches
 			foreach(string radioNetwork in Directory.GetDirectories( radioDirectory )) {
 				if(radioNetwork != radioDirectory) {
 					if(Directory.GetFiles(radioNetwork, "*.ogg").Count() == 0) {
-						// Debug.Log("Creating Network : " + new DirectoryInfo(radioNetwork).Name);
 
 						RadioNetwork network = new()
 						{
@@ -91,7 +83,6 @@ namespace ExtendedRadio.Patches
 						
 						foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
 							if(radioStation != radioNetwork) {
-								// Debug.Log("Creating Radio : " + new DirectoryInfo(radioStation).Name);
 								RadioChannel radioChannel = createRadioStation(radioStation, network.name);
 								string text = radioChannel.name;
 								while (m_RadioChannels.ContainsKey(text))
@@ -103,7 +94,6 @@ namespace ExtendedRadio.Patches
 							}
 						}
 					} else {
-						// Debug.Log("Creating Radio : " + new DirectoryInfo(radioNetwork).Name);
 						RadioChannel radioChannel = createRadioStation(radioNetwork, "Public Citizen Radio");
 						string text = radioChannel.name;
 						while (m_RadioChannels.ContainsKey(text))
@@ -169,6 +159,9 @@ namespace ExtendedRadio.Patches
 			// Debug.Log("Radio Network : " + __instance.currentChannel.network + " | Radio Channel : " + __instance.currentChannel.name);
 		
 			if(Radio_LoadRadio.customeRadioChannel.Contains(__instance.currentChannel.name)) {
+
+				// ADD here the randomizer for audioclip.
+
 				// string path = Radio_LoadRadio.radioDirectory;
 				// path = Radio_LoadRadio.customeNetwork.Contains(__instance.currentChannel.network) ? Path.Combine(path, __instance.currentChannel.network) : path;
 				// path = Path.Combine(path, __instance.currentChannel.name);

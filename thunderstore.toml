@@ -4,12 +4,13 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "TritonSupreme"
 name = "ExtendedRadio"
-versionNumber = "0.1.0"
-description = "A mod to improve the game's radio."
+versionNumber = "0.1.1"
+description = "This mod aims to add features and improve existing ones for the game's radio player."
 websiteUrl = "https://github.com/AlphaGaming7780/ExtendedRadio"
 containsNsfwContent = false
 
 [package.dependencies]
+BepInEx-BepInExPack = 5.4.2100"
 # AuthorName-PackageName = "0.0.1"
 
 [build]

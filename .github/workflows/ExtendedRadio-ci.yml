@@ -39,11 +39,6 @@ jobs:
           type: 'zip'
           filename: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           path: "${{ github.event.repository.name }}"
-      # - name: Upload Artifact (BepInEx ${{ matrix.bepinex-version }})
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: built-code-${{ matrix.bepinex-version }}
-      #     path: dist/*.dll
       - name: Upload Artifact (Zip Release BepInEx ${{ matrix.bepinex-version }})
         uses: actions/upload-artifact@v3
         with:
@@ -57,20 +52,18 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Download Zip artifact
+      - name: Download Zip artifact BepInEx-5
         uses: actions/download-artifact@v3
-        id: download
         with:
           name: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5
           path: .
       - name: Debug
         run: ls -R
-      - name: Unzip fill
-      #           rm ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+      - name: Preparing BepInEx-5 (UnZip and moving)
         run: |
           unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
-          ls -R
-          mv ${{ github.workspace }}/${{ github.event.repository.name }} ${{ github.workspace }}/dist
+          mkdir -p ${{ github.workspace }}/dist
+          mv ${{ github.workspace }}/${{ github.event.repository.name }} ${{ github.workspace }}/dist/${{ github.event.repository.name }}
       - name: Debug
         run: ls && ls dist/
       - name: Download tcli
