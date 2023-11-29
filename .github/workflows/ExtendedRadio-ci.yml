@@ -26,6 +26,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 6.0.x
+      - name: Install TagLibSharp
+        run: dotnet add package TagLibSharp --version 2.3.0
       - name: Build (BepInEx ${{ matrix.bepinex-version }})
         run: make package-unix BEPINEX_VERSION=${{ matrix.bepinex-version }}
       - name: Coping All the default elements
