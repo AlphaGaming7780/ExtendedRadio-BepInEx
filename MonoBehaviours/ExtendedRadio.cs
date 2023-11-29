@@ -10,18 +10,8 @@ using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio.MonoBehaviours
 {
-	/// <summary>
-	/// A custom .ogg music loader
-	/// </summary>
-	/// <remarks>
-	/// (Looks in {assemblyPath}\music for .ogg files, loads async.)
-	/// </remarks>
-	/// 
-
 	public class MusicLoader : MonoBehaviour
 	{   
-
-		// private int inCoroutine = 0;
 		private List<AudioAsset> audioAssets = [];
 
 		public Dictionary<string, List<AudioAsset>> radioDatabase = [];
