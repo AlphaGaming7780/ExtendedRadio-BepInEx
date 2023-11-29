@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using ATL;
 using Colossal.IO.AssetDatabase;
 using HarmonyLib;
 using UnityEngine;
@@ -52,9 +51,11 @@ namespace ExtendedRadio.MonoBehaviours
 					Traverse audioAssetTravers = Traverse.Create(audioAsset);
 					audioAssetTravers.Field("m_Instance").SetValue(clip);
 
-					m_Metatags[Metatag.Title] = new DirectoryInfo(filePath).Name;
-					m_Metatags[Metatag.Album] = "Album";
-					m_Metatags[Metatag.Artist] = "Artist";
+					TagLib.File tagFile = TagLib.File.Create(filePath);
+					m_Metatags[Metatag.Title] = tagFile.Tag.Title;
+					// m_Metatags[Metatag.Title] = new DirectoryInfo(filePath).Name;
+					m_Metatags[Metatag.Album] = tagFile.Tag.Album; 
+					m_Metatags[Metatag.Artist] = tagFile.Tag.FirstPerformer;
 					m_Metatags[Metatag.Type] = "Music";
 					m_Metatags[Metatag.Brand] = "Brand";
 					m_Metatags[Metatag.RadioStation] = radioNetwork;
@@ -65,19 +66,8 @@ namespace ExtendedRadio.MonoBehaviours
 					m_Metatags[Metatag.WeatherType] = "";
 					audioAssetTravers.Field("m_Metatags").SetValue(m_Metatags);
 
-					// Track track = new(filePath, true);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.Title, track.Title]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.Album, track.Album]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.Artist, track.Artist]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.Type, track, "TYPE"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.Brand, track, "BRAND"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.RadioStation, track, "RADIO STATION"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.RadioChannel, track, "RADIO CHANNEL"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.PSAType, track, "PSA TYPE"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.AlertType, track, "ALERT TYPE"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.NewsType, track, "NEWS TYPE"]);
-					// audioAssetTravers.Method("AddMetaTag", (object[])[Metatag.WeatherType, track, "WEATHER TYPE"]);
-					// audioAssetTravers.Field("durationMs").SetValue(track.DurationMs);
+					audioAssetTravers.Field("durationMs").SetValue((double)tagFile.Properties.Duration.Milliseconds);
+
 					// if (GetTimeTag(track, "LOOPSTART", out double time))
 					// {
 					// 	audioAssetTravers.Field("loopStart").SetValue(time);

@@ -12,16 +12,17 @@ This mod aims to add features and improve existing ones for the game's radio pla
 ## Instalation 
 You can download this mod directly for this GitHub or from the [C:S2 Thunderstorm mod page](https://thunderstore.io/c/cities-skylines-ii/p/TritonSupreme/ExtendedRadio/).
 
-If you download it from the GitHub, you need to put the mod folder inside the `YourGamePath/BepInEx/Plugins`
+If you download it from the GitHub or the Thunderstore page without using the mod manger, you need to put the folder named `ExtendedRadio` inside the `YourGamePath/BepInEx/Plugins` folder.
 
 ## Features
 
 - [Custom radios](https://github.com/AlphaGaming7780/ExtendedRadio/wiki/Custom-Radio)
 
 ## Feature roadmap
-> ❌ Radio Mode (For mod and add more customisation).
-> ❌ Randomise the clips.
-> ✔️ Custom Radio (Personal radio only).
+- ❌ Radio Mode (For mod and add more customisation).
+- ❌ Loading Meta tag from the audio file. (Title, Author, ...)
+- ❌ Randomise the clips.
+- ✔️ Custom Radio (Personal radio only).
 
 
 # Community
