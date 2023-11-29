@@ -12,7 +12,7 @@
 		<AssemblyName>ExtendedRadio</AssemblyName>
 		<RootNamespace>ExtendedRadio</RootNamespace>
 		<Description>A mod that I made for Cities: Skylines 2</Description>
-		<Version>0.2.0</Version>
+		<Version>0.2.1</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>preview</LangVersion>
 		<RestoreAdditionalProjectSources>

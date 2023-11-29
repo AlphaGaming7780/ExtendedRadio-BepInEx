@@ -2,7 +2,6 @@
 using System.Reflection;
 using BepInEx;
 using HarmonyLib;
-using UnityEngine;
 
 #if BEPINEX_V6
     using BepInEx.Unity.Mono;
