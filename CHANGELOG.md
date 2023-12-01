@@ -1,3 +1,6 @@
+# DEV
+- Add Two new radio mod format that support all the possible customisation
+
 # 0.2.1
 - Fixed: Changelog
 - add link to the wiki

@@ -28,5 +28,9 @@ If you download it from the GitHub or the Thunderstore page without using the mo
 - ✔️ Randomise the clips.
 - ✔️ Custom Radio (Personal radio only).
 
+# Acknowledgment
+- [Captain-Of-Coit](https://github.com/Captain-Of-Coit)
+- [DragonOfMercy](https://github.com/dragonofmercy)
+
 # Community
 Looking to discuss Cities: Skylines 2 Unofficial modding together with other modders? You're welcome to join [Cities 2 Modding Discord](https://discord.gg/vd7HXnpPJf) or the [Cities: Skylines Modding Discord](https://discord.gg/27CVdGFA47).

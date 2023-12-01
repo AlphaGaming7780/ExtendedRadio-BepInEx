@@ -2,8 +2,8 @@ name: RadioExtended-ci
 
 on:
   push:
-    # branches: [ "master" ]
-    tags: [ "v*" ]
+    branches: [ "DEV" ]
+    # tags: [ "v*" ]
 
 jobs:
   build:
@@ -67,7 +67,7 @@ jobs:
           allowUpdates: true
           removeArtifacts: true
           artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6.zip"
-          bodyFile: "CHANGELOG.md"
+          bodyFile: "LASTCHANGELOG.md"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
