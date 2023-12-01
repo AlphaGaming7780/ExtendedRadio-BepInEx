@@ -41,7 +41,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
-          filename: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip"
+          filename: "${{ github.event.repository.name }}-${{ env.RELEASE_TAG }}_BepInEx-${{ matrix.bepinex-version }}.zip"
           path: "${{ github.event.repository.name }}"
       - name: Upload Artifact (Zip Release BepInEx ${{ matrix.bepinex-version }})
         uses: actions/upload-artifact@v3
@@ -65,10 +65,10 @@ jobs:
       - name: Create Release
         uses: ncipollo/release-action@v1.13.0
         with:
-          tag: "$RELEASE_TAG"
+          tag: "${{env.RELEASE_TAG}}"
           allowUpdates: true
           removeArtifacts: true
-          artifacts: "${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip,${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-6.zip"
+          artifacts: "${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-5/${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-5.zip,${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-6/${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-6.zip"
           bodyFile: "LASTCHANGELOG.md"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
