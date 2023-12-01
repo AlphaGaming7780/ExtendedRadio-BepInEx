@@ -46,8 +46,8 @@ jobs:
       - name: Upload Artifact (Zip Release BepInEx ${{ matrix.bepinex-version }})
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}
-          path: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-${{ matrix.bepinex-version }}.zip
+          name: ${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-${{ matrix.bepinex-version }}
+          path: ${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-${{ matrix.bepinex-version }}.zip
 
   Release:
     needs: build
@@ -84,13 +84,13 @@ jobs:
       - name: Download Zip artifact BepInEx-5
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5
+          name: ${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-5
           path: .
       - name: Debug
         run: ls -R
       - name: Preparing BepInEx-5 (UnZip and moving)
         run: |
-          unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{ github.ref_name }}_BepInEx-5.zip
+          unzip ${{ github.workspace }}/${{ github.event.repository.name }}-${{env.RELEASE_TAG}}_BepInEx-5.zip
           mkdir -p ${{ github.workspace }}/dist
           mv ${{ github.workspace }}/${{ github.event.repository.name }} ${{ github.workspace }}/dist/${{ github.event.repository.name }}
       - name: Debug
