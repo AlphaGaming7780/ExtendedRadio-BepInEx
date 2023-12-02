@@ -1,7 +1,5 @@
-# 0.3.0-pre-2
-- Add: Two new radio mod format that support all the possible customisation
-- Update: The wiki is update for the 0.3.0 version of the mod
-- bug fixed
-
-## Known bug
-- The metatag from audiofile loaded using the RadioPath file arrangement isn't show in game.
+# 0.3.0-pre-4
+- Add: A complete new way to create radio, that support a lot of customisation.
+- Add: The API is finally there, you can now create radio using mod.
+- Update: The wiki is update for the 0.3.0pre-3 version of the mod.
+- Fixed: Bug.

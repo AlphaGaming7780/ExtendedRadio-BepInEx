@@ -14,7 +14,7 @@ namespace ExtendedRadio
 	public class ExtendedRadio
 	{   
 		public delegate void OnRadioLoad();
-		public static event OnRadioLoad CallOnLoadRadio;
+		public static event OnRadioLoad CallOnRadioLoad;
 
 		private static readonly List<string> radioDirectories = [Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CustomRadio")];
 
@@ -23,7 +23,7 @@ namespace ExtendedRadio
 		private static readonly List<RadioChannel> customRadioChannels = [];
 		private static readonly List<RadioNetwork> customRadioNetworks = [];
 		internal static List<string> customeRadioChannelsName = [];
-		internal static List<string> customeNetworksName = [];
+		private static readonly List<string> customeNetworksName = [];
 		private static readonly Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>>>> audioDataBase = [];
 		private static Dictionary<string, RadioNetwork> m_Networks = [];
 		private static Dictionary<string, RuntimeRadioChannel> m_RadioChannels = [];
@@ -102,12 +102,33 @@ namespace ExtendedRadio
 			radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
 
 			try {
-				CallOnLoadRadio();
+				CallOnRadioLoad();
 			} catch {}
 		}
 
 		public static void RegisterCustomRadioDirectory(string path) {
 			radioDirectories.Add(path);
+		}
+
+		public static bool AddRadioNetworkToTheGame(RadioNetwork radioNetwork) {
+
+			if(m_Networks.ContainsKey(radioNetwork.name)) return false;
+
+			customeNetworksName.Add(radioNetwork.name);
+			m_Networks.Add(radioNetwork.name, radioNetwork);
+
+			return true;
+		}
+
+		public static bool AddRadioChannelToTheGame( RadioChannel radioChannel, string path) {
+
+			if (customeRadioChannelsName.Contains(radioChannel.name)) return false;
+
+			AddAudioToDataBase(radioChannel);
+			customeRadioChannelsName.Add(radioChannel.name);
+			m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(path));
+
+			return true;
 		}
 
 		static internal void AddAudioToDataBase(RadioChannel radioChannel) {
@@ -137,118 +158,7 @@ namespace ExtendedRadio
 			return Encoder.Encode(radioNetwork, EncodeOptions.None);
 		}
 
-		// public static RadioChannel CreateRadioFromJson(string path, string radioNetwork) {
-		// 	JsonFormat.RadioChannel jsRadioChannel = Decoder.Decode(File.ReadAllText(path+"\\Radio.json")).Make<JsonFormat.RadioChannel>();
-
-		// 	RadioChannel radioChannel = new()
-		// 	{
-		// 		network = radioNetwork,
-		// 		name = jsRadioChannel.name,
-		// 		nameId = jsRadioChannel.nameId,
-		// 		description = jsRadioChannel.description,
-		// 		icon = jsRadioChannel.icon,
-		// 		uiPriority = -1,
-		// 		programs = [],
-		// 	};
-
-		// 	foreach(JsonFormat.Program jsProgram in jsRadioChannel.programs) {
-
-		// 		Program program = new() {
-		// 			name = jsProgram.name,
-		// 			description = jsProgram.description,
-		// 			icon = jsProgram.icon,
-		// 			startTime = jsProgram.startTime,
-		// 			endTime = jsProgram.endTime,
-		// 			loopProgram = jsProgram.loopProgram,
-		// 			pairIntroOutro = jsProgram.pairIntroOutro,
-		// 			segments = [],
-		// 		};
-
-		// 		radioChannel.programs = radioChannel.programs.AddToArray(program);
-
-		// 		foreach(JsonFormat.Segment jsSegment in jsProgram.segments) {
-		// 			Segment segment = new() {
-		// 				type = jsSegment.type,
-		// 				clipsCap = jsSegment.clipsCap,
-		// 				tags = [..jsSegment.tags],
-		// 				clips = [],
-		// 			};
-
-		// 			program.segments = program.segments.AddToArray(segment);
-
-		// 			foreach(JsonFormat.AudioAsset jsAudioAsset in jsSegment.clips) {
-		// 				AudioAsset audioAsset = new();
-		// 				audioAsset.AddTag($"AudioFilePath={path}\\{jsAudioAsset.PathToSong}");
-
-		// 				Dictionary<Metatag, string> m_Metatags = [];
-		// 				Traverse audioAssetTravers = Traverse.Create(audioAsset);
-
-		// 				Track track = new(path+"\\"+jsAudioAsset.PathToSong, true);
-		// 				// m_Metatags[Metatag.Title] = jsAudioAsset.Title ?? track.Title;
-		// 				// m_Metatags[Metatag.Album] = jsAudioAsset.Album ?? track.Album;
-		// 				// m_Metatags[Metatag.Artist] = jsAudioAsset.Artist ?? track.Artist;
-		// 				// m_Metatags[Metatag.Type] = jsAudioAsset.Type ?? "Music";
-		// 				// m_Metatags[Metatag.Brand] = jsAudioAsset.Brand ?? "Brand";
-		// 				// m_Metatags[Metatag.RadioStation] = jsAudioAsset.RadioStation ?? radioChannel.network;
-		// 				// m_Metatags[Metatag.RadioChannel] = jsAudioAsset.RadioChannel ?? radioChannel.name;
-		// 				// m_Metatags[Metatag.PSAType] = jsAudioAsset.PSAType ?? "";
-		// 				// m_Metatags[Metatag.AlertType] = jsAudioAsset.AlertType ?? "";
-		// 				// m_Metatags[Metatag.NewsType] = jsAudioAsset.NewsType ?? "";
-		// 				// m_Metatags[Metatag.WeatherType] = jsAudioAsset.WeatherType ?? "";
-
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", jsAudioAsset.RadioStation ?? radioChannel.network);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, track, "RADIO CHANNEL", jsAudioAsset.RadioChannel ?? radioChannel.name);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.PSAType, track, "PSA TYPE", jsAudioAsset.PSAType);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.AlertType, track, "ALERT TYPE", jsAudioAsset.AlertType);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.NewsType, track, "NEWS TYPE", jsAudioAsset.NewsType);
-		// 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.WeatherType, track, "WEATHER TYPE", jsAudioAsset.WeatherType);
-
-		// 				audioAssetTravers.Field("m_Metatags").SetValue(m_Metatags);
-		// 				audioAssetTravers.Field("durationMs").SetValue(track.DurationMs);
-		// 				audioAssetTravers.Field("m_Instance").SetValue(null);
-
-		// 				if (jsAudioAsset.loopStart == -1 && MusicLoader.GetTimeTag(track, "LOOPSTART", out double time))
-		// 				{
-		// 					audioAssetTravers.Field("loopStart").SetValue(time);
-		// 				} else {
-		// 					audioAssetTravers.Field("loopStart").SetValue(jsAudioAsset.loopStart);
-		// 				}
-
-		// 				if (jsAudioAsset.loopEnd == -1 && MusicLoader.GetTimeTag(track, "LOOPEND", out time))
-		// 				{
-		// 					audioAssetTravers.Field("loopEnd").SetValue(time);
-		// 				} else {
-		// 					audioAssetTravers.Field("loopEnd").SetValue(jsAudioAsset.loopEnd);
-		// 				}
-
-		// 				if (jsAudioAsset.alternativeStart == -1 && MusicLoader.GetTimeTag(track, "ALTERNATIVESTART", out time))
-		// 				{
-		// 					audioAssetTravers.Field("alternativeStart").SetValue(time);
-		// 				} else {
-		// 					audioAssetTravers.Field("alternativeStart").SetValue(jsAudioAsset.alternativeStart);
-		// 				}
-
-		// 				if (jsAudioAsset.fadeoutTime == -1 && MusicLoader.GetTimeTag(track, "FADEOUTTIME", out float time2))
-		// 				{
-		// 					audioAssetTravers.Field("fadeoutTime").SetValue(time2);
-		// 				} else {
-		// 					audioAssetTravers.Field("fadeoutTime").SetValue(jsAudioAsset.fadeoutTime);
-		// 				}
-
-		// 				segment.clips = segment.clips.AddToArray(audioAsset);
-		// 			}
-		// 		}
-		// 	}
-
-		// 	return radioChannel;
-		// }
-
-		static public RadioChannel CreateRadioFromPathAndJson(string path, string radioNetwork) {
+		public static RadioChannel CreateRadioFromPathAndJson(string path, string radioNetwork) {
 			
 			RadioChannel radioChannel = Decoder.Decode(File.ReadAllText(path+"\\RadioChannel.json")).Make<RadioChannel>();
 			radioChannel.network = radioNetwork;
@@ -257,7 +167,7 @@ namespace ExtendedRadio
 				Program program = Decoder.Decode(File.ReadAllText(programDirectory+"\\Program.json")).Make<Program>();
 
 				foreach(string segmentDirectory in Directory.GetDirectories( programDirectory )) {
-					Segment segment = CreatePSegmentFromJson(segmentDirectory+"\\Segment.json", radioNetwork, radioChannel.name);
+					Segment segment = CreateSegmentFromJson(segmentDirectory+"\\Segment.json", radioNetwork, radioChannel.name);
 					
 					program.segments = program.segments.AddToArray(segment);
 				}
@@ -269,7 +179,7 @@ namespace ExtendedRadio
 
 		}
 
-		static public RadioChannel CreateRadioFromPath(string path, string radioNetwork = null) {
+		static private RadioChannel CreateRadioFromPath(string path, string radioNetwork = null) {
 
 			string radioName = new DirectoryInfo(path).Name;
 			while (m_RadioChannels.ContainsKey(radioName))
@@ -315,7 +225,7 @@ namespace ExtendedRadio
 
 		}
 
-		public static Segment CreatePSegmentFromJson(string path, string radioNetwork, string radioChannel) {
+		public static Segment CreateSegmentFromJson(string path, string radioNetwork, string radioChannel) {
 
 			JsonFormat.Segment jsSegment = Decoder.Decode(File.ReadAllText(path)).Make<JsonFormat.Segment>();
 
@@ -397,77 +307,7 @@ namespace ExtendedRadio
 
 		}
 
-		// public static string RadioToJson( RadioChannel radioChannel) {
-
-
-		// 	JsonFormat.RadioChannel jsRadioChannel = new()
-		// 	{	
-		// 		network = radioChannel.network,
-		// 		name = radioChannel.name,
-		// 		nameId = radioChannel.nameId,
-		// 		description = radioChannel.description,
-		// 		icon = radioChannel.icon,
-		// 		programs = [],
-		// 	};
-
-		// 	foreach(Program program in radioChannel.programs) {
-
-		// 		JsonFormat.Program jsProgram = new()
-		// 		{
-		// 			name = program.name,
-		// 			description = program.description,
-		// 			icon = program.icon,
-		// 			startTime = program.startTime,
-		// 			endTime = program.endTime,
-		// 			loopProgram = program.loopProgram,
-		// 			pairIntroOutro = program.pairIntroOutro,
-		// 			segments = [],
-		// 		};
-
-		// 		jsRadioChannel.programs.Add(jsProgram);
-
-		// 		foreach(Segment segment in program.segments) {
-
-		// 			JsonFormat.Segment jsSegment = new() {
-		// 				type = segment.type,
-		// 				clipsCap = segment.clipsCap,
-		// 				tags = [..segment.tags],
-		// 				clips = [],
-		// 			};
-
-		// 			jsProgram.segments.Add(jsSegment);
-
-		// 			foreach(AudioAsset audioAsset in segment.clips) {
-
-		// 				JsonFormat.AudioAsset jsAudioAsset = new() {
-		// 					PathToSong = GetClipPathFromAudiAsset(audioAsset),
-		// 					Title = audioAsset.GetMetaTag(Metatag.Title),
-		// 					Album = audioAsset.GetMetaTag(Metatag.Album),
-		// 					Artist = audioAsset.GetMetaTag(Metatag.Artist),
-		// 					Type = audioAsset.GetMetaTag(Metatag.Type),
-		// 					Brand = audioAsset.GetMetaTag(Metatag.Brand),
-		// 					RadioStation = audioAsset.GetMetaTag(Metatag.RadioStation),
-		// 					RadioChannel = audioAsset.GetMetaTag(Metatag.RadioChannel),
-		// 					PSAType = audioAsset.GetMetaTag(Metatag.PSAType),
-		// 					AlertType = audioAsset.GetMetaTag(Metatag.AlertType),
-		// 					NewsType = audioAsset.GetMetaTag(Metatag.NewsType),
-		// 					WeatherType = audioAsset.GetMetaTag(Metatag.WeatherType),
-		// 					// durationMs = audioAsset.durationMs,
-		// 					loopStart = audioAsset.loopStart,
-		// 					loopEnd = audioAsset.loopEnd,
-		// 					alternativeStart = audioAsset.alternativeStart,
-		// 					fadeoutTime = audioAsset.fadeoutTime,
-		// 				};
-
-		// 				jsSegment.clips.Add(jsAudioAsset);
-		// 			}
-		// 		}
-		// 	}
-
-		// 	return Encoder.Encode(jsRadioChannel, EncodeOptions.None);
-		// }
-
-		public static string GetClipPathFromAudiAsset(AudioAsset audioAsset) {
+		internal static string GetClipPathFromAudiAsset(AudioAsset audioAsset) {
 
 			foreach(string s in audioAsset.tags) {
 				if(s.Contains("AudioFilePath=")) {
@@ -476,7 +316,7 @@ namespace ExtendedRadio
 			}
 			return "";
 		}
-		static internal List<AudioAsset> GetAudiAssetsFromAudioDataBase(Radio radio, SegmentType type) {
+	static internal List<AudioAsset> GetAudiAssetsFromAudioDataBase(Radio radio, SegmentType type) {
 
 			return audioDataBase[radio.currentChannel.network][radio.currentChannel.name][radio.currentChannel.currentProgram.name][type];
 		}
