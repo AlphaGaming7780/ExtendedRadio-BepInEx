@@ -12,13 +12,13 @@ namespace ExtendedRadio
 	{   
 		private static List<AudioAsset> audioAssets = [];
 
-		internal static AudioAsset[] LoadAllAudioClips( string path, string radioStation, string radioNetwork )
+		internal static AudioAsset[] LoadAllAudioClips( string path, string radioChannel, string radioNetwork )
 		{   
 			audioAssets.Clear();
 			var oggFiles = Directory.GetFiles( path, "*.ogg" );
 			foreach ( var oggFile in oggFiles )
 			{	
-				LoadAudioClip( oggFile, radioStation, radioNetwork );
+				LoadAudioClip( oggFile, radioChannel, radioNetwork );
 			}
 
 			return [..audioAssets];
