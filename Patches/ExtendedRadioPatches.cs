@@ -8,7 +8,6 @@ using Game.SceneFlow;
 using Game.UI;
 using HarmonyLib;
 using UnityEngine;
-using BepInEx;
 using static Game.Audio.Radio.Radio;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
@@ -16,14 +15,14 @@ using UnityEngine.Networking;
 namespace ExtendedRadio.Patches
 {
 	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
-    internal class GameManager_InitializeThumbnails
-    {	
+	internal class GameManager_InitializeThumbnails
+	{	
 		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}";
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
 
-        static void Prefix(GameManager __instance)
-        {		
+		static void Prefix(GameManager __instance)
+		{		
 
 			Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio"));
 
@@ -35,19 +34,19 @@ namespace ExtendedRadio.Patches
 			}
 
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
-            
+			
 			if (gameUIResourceHandler == null)
-            {
-                Debug.LogError("Failed retrieving GameManager's GameUIResourceHandler instance, exiting.");
-                return;
-            }
+			{
+				Debug.LogError("Failed retrieving GameManager's GameUIResourceHandler instance, exiting.");
+				return;
+			}
 			
 			gameUIResourceHandler.HostLocationsMap.Add(
-                IconsResourceKey,
-                new List<string> {
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                }
-            );
+				IconsResourceKey,
+				[
+					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+				]
+			);
 		}
 	}
 
