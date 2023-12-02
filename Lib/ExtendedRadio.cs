@@ -40,7 +40,7 @@ namespace ExtendedRadio
 			m_Networks = radioTravers.Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
 			m_RadioChannels = radioTravers.Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>();
 
-			int radioNetworkIndex = m_Networks.Count -1;
+			int radioNetworkIndex = m_Networks.Count;
 
 			foreach(string radioNetwork in Directory.GetDirectories( radioDirectory )) {
 				if(radioNetwork != radioDirectory) {
@@ -51,14 +51,14 @@ namespace ExtendedRadio
 						if(Directory.GetFiles(radioNetwork, "RadioNetwork.json").Length > 0) {
 							network = CreateRadioNetworkFromJson(radioNetwork);
 						} else {
-							network.name = new DirectoryInfo(radioNetwork).Name;
 							network.nameId = new DirectoryInfo(radioNetwork).Name;
 							network.description = "A custom Network";
 							network.descriptionId = "A custom Network";
 							network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
-							network.uiPriority = radioNetworkIndex++;
 							network.allowAds = true;
 						}
+						network.name = new DirectoryInfo(radioNetwork).Name;
+						network.uiPriority = radioNetworkIndex++;
 						
 						if(!m_Networks.ContainsKey(network.name)) {
 							customeNetworksName.Add(network.name);
@@ -198,7 +198,7 @@ namespace ExtendedRadio
 						Dictionary<Metatag, string> m_Metatags = [];
 						Traverse audioAssetTravers = Traverse.Create(audioAsset);
 
-						Track track = new(path+jsAudioAsset.PathToSong, true);
+						Track track = new(path+"\\"+jsAudioAsset.PathToSong, true);
 						// m_Metatags[Metatag.Title] = jsAudioAsset.Title ?? track.Title;
 						// m_Metatags[Metatag.Album] = jsAudioAsset.Album ?? track.Album;
 						// m_Metatags[Metatag.Artist] = jsAudioAsset.Artist ?? track.Artist;
