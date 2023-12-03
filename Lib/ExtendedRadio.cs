@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using System.IO;
-using Colossal.IO.AssetDatabase;
-using Game.Audio.Radio;
-using HarmonyLib;
-using UnityEngine;
-using static Game.Audio.Radio.Radio;
+using System.Collections.Generic;
 using Colossal.Json;
-using ExtendedRadio.Patches;
-using ATL;
+using Colossal.IO.AssetDatabase;
 using static Colossal.IO.AssetDatabase.AudioAsset;
+using Game.Audio.Radio;
+using static Game.Audio.Radio.Radio;
+using ExtendedRadio.Patches;
+using ExtendedRadio.JsonFormat;
+using ATL;
+using HarmonyLib;
 namespace ExtendedRadio
 {
 	public class ExtendedRadio
@@ -30,6 +30,7 @@ namespace ExtendedRadio
 
 		private static Traverse radioTravers;
 
+		private static int radioNetworkIndex;
 		static internal void OnLoadRadio(Radio __instance) {
 
 			customRadioChannels.Clear();
@@ -40,7 +41,7 @@ namespace ExtendedRadio
 			m_Networks = radioTravers.Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
 			m_RadioChannels = radioTravers.Field("m_RadioChannels").GetValue<Dictionary<string, RuntimeRadioChannel>>();
 
-			int radioNetworkIndex = m_Networks.Count;
+			radioNetworkIndex = m_Networks.Count;
 
 			foreach(string radioDirectory in radioDirectories) {
 				foreach(string radioNetwork in Directory.GetDirectories( radioDirectory )) {
@@ -50,7 +51,7 @@ namespace ExtendedRadio
 							RadioNetwork network = new();
 
 							if(Directory.GetFiles(radioNetwork, "RadioNetwork.json").Length > 0) {
-								network = CreateRadioNetworkFromJson(radioNetwork);
+								network = JsonToRadioNetwork(radioNetwork);
 							} else {
 								network.nameId = new DirectoryInfo(radioNetwork).Name;
 								network.description = "A custom Network";
@@ -71,7 +72,7 @@ namespace ExtendedRadio
 									RadioChannel radioChannel;
 
 									if(Directory.GetFiles(radioStation, "RadioChannel.json").Length > 0) {
-										radioChannel = CreateRadioFromPathAndJson(radioStation, network.name);
+										radioChannel = JsonToRadio(radioStation, network.name);
 									} else {
 										radioChannel = CreateRadioFromPath(radioStation, network.name);
 									}
@@ -85,7 +86,7 @@ namespace ExtendedRadio
 							RadioChannel radioChannel;
 
 							if(Directory.GetFiles(radioNetwork, "RadioChannel.json").Length > 0) {
-								radioChannel = CreateRadioFromPathAndJson(radioNetwork, "Public Citizen Radio");
+								radioChannel = JsonToRadio(radioNetwork, "Public Citizen Radio");
 							} else {
 								radioChannel = CreateRadioFromPath(radioNetwork, "Public Citizen Radio");
 							}
@@ -97,13 +98,13 @@ namespace ExtendedRadio
 				}
 			}
 
-			radioTravers.Field("m_Networks").SetValue(m_Networks);
-			radioTravers.Field("m_RadioChannels").SetValue(m_RadioChannels);
-			radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
-
 			try {
 				CallOnRadioLoad();
 			} catch {}
+
+			radioTravers.Field("m_Networks").SetValue(m_Networks);
+			radioTravers.Field("m_RadioChannels").SetValue(m_RadioChannels);
+			radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
 		}
 
 		public static void RegisterCustomRadioDirectory(string path) {
@@ -114,13 +115,14 @@ namespace ExtendedRadio
 
 			if(m_Networks.ContainsKey(radioNetwork.name)) return false;
 
+			radioNetwork.uiPriority = radioNetworkIndex++;
 			customeNetworksName.Add(radioNetwork.name);
 			m_Networks.Add(radioNetwork.name, radioNetwork);
 
 			return true;
 		}
 
-		public static bool AddRadioChannelToTheGame( RadioChannel radioChannel, string path) {
+		public static bool AddRadioChannelToTheGame( RadioChannel radioChannel, string path = "") {
 
 			if (customeRadioChannelsName.Contains(radioChannel.name)) return false;
 
@@ -150,7 +152,7 @@ namespace ExtendedRadio
 				}
 			}
 		}
-		public static RadioNetwork CreateRadioNetworkFromJson(string path) {
+		public static RadioNetwork JsonToRadioNetwork(string path) {
 			return Decoder.Decode(File.ReadAllText(path+"\\RadioNetwork.json")).Make<RadioNetwork>();
 		}
 
@@ -158,16 +160,19 @@ namespace ExtendedRadio
 			return Encoder.Encode(radioNetwork, EncodeOptions.None);
 		}
 
-		public static RadioChannel CreateRadioFromPathAndJson(string path, string radioNetwork) {
+		public static RadioChannel JsonToRadio(string path, string radioNetwork = null) {
 			
 			RadioChannel radioChannel = Decoder.Decode(File.ReadAllText(path+"\\RadioChannel.json")).Make<RadioChannel>();
-			radioChannel.network = radioNetwork;
+			
+			if(radioNetwork != null) {
+				radioChannel.network = radioNetwork;
+			}
 
 			foreach(string programDirectory in Directory.GetDirectories( path )) {
 				Program program = Decoder.Decode(File.ReadAllText(programDirectory+"\\Program.json")).Make<Program>();
 
 				foreach(string segmentDirectory in Directory.GetDirectories( programDirectory )) {
-					Segment segment = CreateSegmentFromJson(segmentDirectory+"\\Segment.json", radioNetwork, radioChannel.name);
+					Segment segment = JsonToSegment(segmentDirectory+"\\Segment.json", radioChannel.network, radioChannel.name);
 					
 					program.segments = program.segments.AddToArray(segment);
 				}
@@ -225,9 +230,17 @@ namespace ExtendedRadio
 
 		}
 
-		public static Segment CreateSegmentFromJson(string path, string radioNetwork, string radioChannel) {
+		public static RadioChannel JsonToRadioChannel(string path) {
+			return Decoder.Decode(File.ReadAllText(path+"\\RadioChannel.json")).Make<RadioChannel>();
+		}
 
-			JsonFormat.Segment jsSegment = Decoder.Decode(File.ReadAllText(path)).Make<JsonFormat.Segment>();
+		public static Program JsonToProgram(string path) {
+			return Decoder.Decode(File.ReadAllText(path+"\\Program.json")).Make<Program>();
+		}
+
+		public static Segment JsonToSegment(string path, string radioNetwork = null, string radioChannel =  null) {
+
+			jsSegment jsSegment = Decoder.Decode(File.ReadAllText(path)).Make<jsSegment>();
 
 			Segment segment = new() {
 				type = jsSegment.type,
@@ -236,7 +249,7 @@ namespace ExtendedRadio
 				clips = [],
 			};
 
-			foreach(JsonFormat.AudioAsset jsAudioAsset in jsSegment.clips) {
+			foreach(jsAudioAsset jsAudioAsset in jsSegment.clips) {
 				AudioAsset audioAsset = new();
 				audioAsset.AddTag($"AudioFilePath={path[..^"\\Segment.json".Length]}\\{jsAudioAsset.PathToSong}");
 
@@ -244,17 +257,6 @@ namespace ExtendedRadio
 				Traverse audioAssetTravers = Traverse.Create(audioAsset);
 
 				Track track = new(path[..^"\\Segment.json".Length]+"\\"+jsAudioAsset.PathToSong, true);
-				// m_Metatags[Metatag.Title] = jsAudioAsset.Title ?? track.Title;
-				// m_Metatags[Metatag.Album] = jsAudioAsset.Album ?? track.Album;
-				// m_Metatags[Metatag.Artist] = jsAudioAsset.Artist ?? track.Artist;
-				// m_Metatags[Metatag.Type] = jsAudioAsset.Type ?? "Music";
-				// m_Metatags[Metatag.Brand] = jsAudioAsset.Brand ?? "Brand";
-				// m_Metatags[Metatag.RadioStation] = jsAudioAsset.RadioStation ?? radioChannel.network;
-				// m_Metatags[Metatag.RadioChannel] = jsAudioAsset.RadioChannel ?? radioChannel.name;
-				// m_Metatags[Metatag.PSAType] = jsAudioAsset.PSAType ?? "";
-				// m_Metatags[Metatag.AlertType] = jsAudioAsset.AlertType ?? "";
-				// m_Metatags[Metatag.NewsType] = jsAudioAsset.NewsType ?? "";
-				// m_Metatags[Metatag.WeatherType] = jsAudioAsset.WeatherType ?? "";
 
 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
 				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
@@ -316,7 +318,7 @@ namespace ExtendedRadio
 			}
 			return "";
 		}
-	static internal List<AudioAsset> GetAudiAssetsFromAudioDataBase(Radio radio, SegmentType type) {
+		static internal List<AudioAsset> GetAudiAssetsFromAudioDataBase(Radio radio, SegmentType type) {
 
 			return audioDataBase[radio.currentChannel.network][radio.currentChannel.name][radio.currentChannel.currentProgram.name][type];
 		}

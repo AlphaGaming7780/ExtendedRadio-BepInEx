@@ -23,7 +23,10 @@ If you download it from the GitHub or the Thunderstore page without using the mo
 - [Custom radios](https://github.com/AlphaGaming7780/ExtendedRadio/wiki/Custom-Radio)
 
 ## Feature roadmap
-- ❌ Radio Mode (For mod and add more customisation).
+- ❌ Improve the UI (Progress bar)
+- ❌ Blacklist system
+- ❌ Improve the API to give more freedom and possibility to modders
+- ✔️ Radio Mode (For mod and add more customisation).
 - ✔️ Loading Meta tag from the audio file. (Title, Author, ...)
 - ✔️ Randomise the clips.
 - ✔️ Custom Radio (Personal radio only).
