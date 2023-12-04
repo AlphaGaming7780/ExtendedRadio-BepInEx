@@ -37,21 +37,21 @@ namespace ExtendedRadio.JsonFormat
 
     //     public List<Segment> segments = [];
 	// }
-	[Serializable]
-	public class jsSegment
-	{
-        public Radio.SegmentType type;
+	// [Serializable]
+	// public class jsSegment
+	// {
+    //     public Radio.SegmentType type;
 
-        public List<jsAudioAsset> clips = [];
+    //     public List<jsAudioAsset> clips = [];
 
-        public List<string> tags = [];
+    //     public List<string> tags = [];
 
-        public int clipsCap;
-    }
+    //     public int clipsCap;
+    // }
 	[Serializable]
 	public class jsAudioAsset
 	{
-		public string PathToSong = null;
+		public string SongName = null;
 		public string Title = null;
         public string Album = null;
         public string Artist = null;

@@ -9,6 +9,8 @@ using ExtendedRadio.Patches;
 using ExtendedRadio.JsonFormat;
 using ATL;
 using HarmonyLib;
+using UnityEngine;
+
 namespace ExtendedRadio
 {
 	public class ExtendedRadio
@@ -68,18 +70,16 @@ namespace ExtendedRadio
 							}
 							
 							foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
-								if(radioStation != radioNetwork) {
-									RadioChannel radioChannel;
+								RadioChannel radioChannel;
 
-									if(Directory.GetFiles(radioStation, "RadioChannel.json").Length > 0) {
-										radioChannel = JsonToRadio(radioStation, network.name);
-									} else {
-										radioChannel = CreateRadioFromPath(radioStation, network.name);
-									}
-									AddAudioToDataBase(radioChannel);
-									customeRadioChannelsName.Add(radioChannel.name);
-									m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
+								if(Directory.GetFiles(radioStation, "RadioChannel.json").Length > 0) {
+									radioChannel = JsonToRadio(radioStation, network.name);
+								} else {
+									radioChannel = CreateRadioFromPath(radioStation, network.name);
 								}
+								AddAudioToDataBase(radioChannel);
+								customeRadioChannelsName.Add(radioChannel.name);
+								m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
 							}
 						} else {
 
@@ -172,8 +172,16 @@ namespace ExtendedRadio
 				Program program = Decoder.Decode(File.ReadAllText(programDirectory+"\\Program.json")).Make<Program>();
 
 				foreach(string segmentDirectory in Directory.GetDirectories( programDirectory )) {
-					Segment segment = JsonToSegment(segmentDirectory+"\\Segment.json", radioChannel.network, radioChannel.name);
+					Segment segment = Decoder.Decode(File.ReadAllText(segmentDirectory+"\\Segment.json")).Make<Segment>();
 					
+					foreach(string audioAssetDirectory in Directory.GetDirectories( segmentDirectory )) {
+						foreach(string audioAssetFile in Directory.GetFiles(audioAssetDirectory, "*.json")) {
+							
+							segment.clips = segment.clips.AddToArray(JsonToAudioAsset(audioAssetFile, radioChannel.network, radioChannel.name));
+
+						}
+					}
+
 					program.segments = program.segments.AddToArray(segment);
 				}
 
@@ -238,75 +246,136 @@ namespace ExtendedRadio
 			return Decoder.Decode(File.ReadAllText(path+"\\Program.json")).Make<Program>();
 		}
 
-		public static Segment JsonToSegment(string path, string radioNetwork = null, string radioChannel =  null) {
+		public static Segment JsonToSegment(string path) {
 
-			jsSegment jsSegment = Decoder.Decode(File.ReadAllText(path)).Make<jsSegment>();
+			Segment segment = Decoder.Decode(File.ReadAllText(path+"\\Segment.json")).Make<Segment>();
 
-			Segment segment = new() {
-				type = jsSegment.type,
-				clipsCap = jsSegment.clipsCap,
-				tags = [..jsSegment.tags],
-				clips = [],
-			};
+			// jsSegment jsSegment = Decoder.Decode(File.ReadAllText(path)).Make<jsSegment>();
 
-			foreach(jsAudioAsset jsAudioAsset in jsSegment.clips) {
-				AudioAsset audioAsset = new();
-				audioAsset.AddTag($"AudioFilePath={path[..^"\\Segment.json".Length]}\\{jsAudioAsset.PathToSong}");
+			// Segment segment = new() {
+			// 	type = jsSegment.type,
+			// 	clipsCap = jsSegment.clipsCap,
+			// 	tags = [..jsSegment.tags],
+			// 	clips = [],
+			// };
 
-				Dictionary<Metatag, string> m_Metatags = [];
-				Traverse audioAssetTravers = Traverse.Create(audioAsset);
+			// foreach(jsAudioAsset jsAudioAsset in jsSegment.clips) {
+			// 	AudioAsset audioAsset = new();
+			// 	audioAsset.AddTag($"AudioFilePath={path[..^"\\Segment.json".Length]}\\{jsAudioAsset.PathToSong}");
 
-				Track track = new(path[..^"\\Segment.json".Length]+"\\"+jsAudioAsset.PathToSong, true);
+			// 	Dictionary<Metatag, string> m_Metatags = [];
+			// 	Traverse audioAssetTravers = Traverse.Create(audioAsset);
 
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", jsAudioAsset.RadioStation ?? radioNetwork);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, track, "RADIO CHANNEL", jsAudioAsset.RadioChannel ?? radioChannel);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.PSAType, track, "PSA TYPE", jsAudioAsset.PSAType);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.AlertType, track, "ALERT TYPE", jsAudioAsset.AlertType);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.NewsType, track, "NEWS TYPE", jsAudioAsset.NewsType);
-				MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.WeatherType, track, "WEATHER TYPE", jsAudioAsset.WeatherType);
+			// 	Track track = new(path[..^"\\Segment.json".Length]+"\\"+jsAudioAsset.PathToSong, true);
 
-				audioAssetTravers.Field("m_Metatags").SetValue(m_Metatags);
-				audioAssetTravers.Field("durationMs").SetValue(track.DurationMs);
-				audioAssetTravers.Field("m_Instance").SetValue(null);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", jsAudioAsset.RadioStation ?? radioNetwork);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, track, "RADIO CHANNEL", jsAudioAsset.RadioChannel ?? radioChannel);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.PSAType, track, "PSA TYPE", jsAudioAsset.PSAType);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.AlertType, track, "ALERT TYPE", jsAudioAsset.AlertType);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.NewsType, track, "NEWS TYPE", jsAudioAsset.NewsType);
+			// 	MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.WeatherType, track, "WEATHER TYPE", jsAudioAsset.WeatherType);
 
-				if (jsAudioAsset.loopStart == -1 && MusicLoader.GetTimeTag(track, "LOOPSTART", out double time))
-				{
-					audioAssetTravers.Field("loopStart").SetValue(time);
-				} else {
-					audioAssetTravers.Field("loopStart").SetValue(jsAudioAsset.loopStart);
-				}
+			// 	audioAssetTravers.Field("m_Metatags").SetValue(m_Metatags);
+			// 	audioAssetTravers.Field("durationMs").SetValue(track.DurationMs);
+			// 	audioAssetTravers.Field("m_Instance").SetValue(null);
 
-				if (jsAudioAsset.loopEnd == -1 && MusicLoader.GetTimeTag(track, "LOOPEND", out time))
-				{
-					audioAssetTravers.Field("loopEnd").SetValue(time);
-				} else {
-					audioAssetTravers.Field("loopEnd").SetValue(jsAudioAsset.loopEnd);
-				}
+			// 	if (jsAudioAsset.loopStart == -1 && MusicLoader.GetTimeTag(track, "LOOPSTART", out double time))
+			// 	{
+			// 		audioAssetTravers.Field("loopStart").SetValue(time);
+			// 	} else {
+			// 		audioAssetTravers.Field("loopStart").SetValue(jsAudioAsset.loopStart);
+			// 	}
 
-				if (jsAudioAsset.alternativeStart == -1 && MusicLoader.GetTimeTag(track, "ALTERNATIVESTART", out time))
-				{
-					audioAssetTravers.Field("alternativeStart").SetValue(time);
-				} else {
-					audioAssetTravers.Field("alternativeStart").SetValue(jsAudioAsset.alternativeStart);
-				}
+			// 	if (jsAudioAsset.loopEnd == -1 && MusicLoader.GetTimeTag(track, "LOOPEND", out time))
+			// 	{
+			// 		audioAssetTravers.Field("loopEnd").SetValue(time);
+			// 	} else {
+			// 		audioAssetTravers.Field("loopEnd").SetValue(jsAudioAsset.loopEnd);
+			// 	}
 
-				if (jsAudioAsset.fadeoutTime == -1 && MusicLoader.GetTimeTag(track, "FADEOUTTIME", out float time2))
-				{
-					audioAssetTravers.Field("fadeoutTime").SetValue(time2);
-				} else {
-					audioAssetTravers.Field("fadeoutTime").SetValue(jsAudioAsset.fadeoutTime);
-				}
+			// 	if (jsAudioAsset.alternativeStart == -1 && MusicLoader.GetTimeTag(track, "ALTERNATIVESTART", out time))
+			// 	{
+			// 		audioAssetTravers.Field("alternativeStart").SetValue(time);
+			// 	} else {
+			// 		audioAssetTravers.Field("alternativeStart").SetValue(jsAudioAsset.alternativeStart);
+			// 	}
 
-				segment.clips = segment.clips.AddToArray(audioAsset);
-			}
+			// 	if (jsAudioAsset.fadeoutTime == -1 && MusicLoader.GetTimeTag(track, "FADEOUTTIME", out float time2))
+			// 	{
+			// 		audioAssetTravers.Field("fadeoutTime").SetValue(time2);
+			// 	} else {
+			// 		audioAssetTravers.Field("fadeoutTime").SetValue(jsAudioAsset.fadeoutTime);
+			// 	}
+
+			// 	segment.clips = segment.clips.AddToArray(audioAsset);
+			// }
 
 			return segment;
 
+		}
+
+		public static AudioAsset JsonToAudioAsset(string audioAssetFile, string networkName = null, string radioChannelName = null) {
+
+			jsAudioAsset jsAudioAsset = Decoder.Decode(File.ReadAllText(audioAssetFile)).Make<jsAudioAsset>();
+
+			AudioAsset audioAsset = new();
+			audioAsset.AddTag($"AudioFilePath={Path.GetDirectoryName(audioAssetFile)+"\\"+jsAudioAsset.SongName}");
+
+			Dictionary<Metatag, string> m_Metatags = [];
+			Traverse audioAssetTravers = Traverse.Create(audioAsset);
+
+			Track track = new(Path.GetDirectoryName(audioAssetFile)+"\\"+jsAudioAsset.SongName, true);
+
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", networkName ?? jsAudioAsset.RadioStation );
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, track, "RADIO CHANNEL", radioChannelName ?? jsAudioAsset.RadioChannel );
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.PSAType, track, "PSA TYPE", jsAudioAsset.PSAType);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.AlertType, track, "ALERT TYPE", jsAudioAsset.AlertType);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.NewsType, track, "NEWS TYPE", jsAudioAsset.NewsType);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.WeatherType, track, "WEATHER TYPE", jsAudioAsset.WeatherType);
+
+			audioAssetTravers.Field("m_Metatags").SetValue(m_Metatags);
+			audioAssetTravers.Field("durationMs").SetValue(track.DurationMs);
+			audioAssetTravers.Field("m_Instance").SetValue(null);
+
+			if (jsAudioAsset.loopStart == -1 && MusicLoader.GetTimeTag(track, "LOOPSTART", out double time))
+			{
+				audioAssetTravers.Field("loopStart").SetValue(time);
+			} else {
+				audioAssetTravers.Field("loopStart").SetValue(jsAudioAsset.loopStart);
+			}
+
+			if (jsAudioAsset.loopEnd == -1 && MusicLoader.GetTimeTag(track, "LOOPEND", out time))
+			{
+				audioAssetTravers.Field("loopEnd").SetValue(time);
+			} else {
+				audioAssetTravers.Field("loopEnd").SetValue(jsAudioAsset.loopEnd);
+			}
+
+			if (jsAudioAsset.alternativeStart == -1 && MusicLoader.GetTimeTag(track, "ALTERNATIVESTART", out time))
+			{
+				audioAssetTravers.Field("alternativeStart").SetValue(time);
+			} else {
+				audioAssetTravers.Field("alternativeStart").SetValue(jsAudioAsset.alternativeStart);
+			}
+
+			if (jsAudioAsset.fadeoutTime == -1 && MusicLoader.GetTimeTag(track, "FADEOUTTIME", out float time2))
+			{
+				audioAssetTravers.Field("fadeoutTime").SetValue(time2);
+			} else {
+				audioAssetTravers.Field("fadeoutTime").SetValue(jsAudioAsset.fadeoutTime);
+			}
+
+			return audioAsset;
 		}
 
 		internal static string GetClipPathFromAudiAsset(AudioAsset audioAsset) {
