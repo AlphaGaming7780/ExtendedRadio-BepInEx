@@ -33,6 +33,12 @@ namespace ExtendedRadio.Patches
 				File.Move(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DefaultIcon.svg"), Path.Combine(resources , "DefaultIcon.svg"));
 			}
 
+			string CustomRadioFolderPlugins = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).Name,"CustomRadio");
+
+			if(Directory.Exists(CustomRadioFolderPlugins)) {
+				ExtendedRadio.RegisterCustomRadioDirectory(CustomRadioFolderPlugins);
+			}
+
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
 			
 			if (gameUIResourceHandler == null)
