@@ -19,9 +19,7 @@ namespace ExtendedRadio
 		public delegate void OnRadioLoad();
 		public static event OnRadioLoad CallOnRadioLoad;
 
-		private static readonly List<string> radioDirectories = [Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CustomRadio")];
-
-		// private static readonly string radioDirectory = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "CustomRadio");
+		private static readonly List<string> radioDirectories = [GameManager_InitializeThumbnails.CustomRadiosPath];
 
 		private static readonly List<RadioChannel> customRadioChannels = [];
 		private static readonly List<RadioNetwork> customRadioNetworks = [];
@@ -59,7 +57,7 @@ namespace ExtendedRadio
 								network.nameId = new DirectoryInfo(radioNetwork).Name;
 								network.description = "A custom Network";
 								network.descriptionId = "A custom Network";
-								network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadio/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
+								network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
 								network.allowAds = true;
 							}
 							network.name = new DirectoryInfo(radioNetwork).Name;
