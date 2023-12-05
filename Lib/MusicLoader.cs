@@ -3,7 +3,6 @@ using System.IO;
 using ATL;
 using Colossal.IO.AssetDatabase;
 using HarmonyLib;
-using UnityEngine;
 using static Colossal.IO.AssetDatabase.AudioAsset;
 
 namespace ExtendedRadio
@@ -24,7 +23,7 @@ namespace ExtendedRadio
 			return [..audioAssets];
 		}
 
-		private static AudioAsset LoadAudioData( string filePath, string radioChannel, string radioNetwork )  /*IEnumerator*/
+		internal static AudioAsset LoadAudioData( string filePath, string radioChannel, string radioNetwork )  /*IEnumerator*/
 		{
 			Dictionary<Metatag, string> m_Metatags = [];
 
@@ -37,7 +36,7 @@ namespace ExtendedRadio
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Title, track.Title);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Album, track.Album);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
-			AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE");
+			AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", "Music");
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND");
 			AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, radioNetwork);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, radioChannel);
