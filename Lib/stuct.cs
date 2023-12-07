@@ -4,50 +4,6 @@ using Game.Audio.Radio;
 
 namespace ExtendedRadio.JsonFormat
 {	
-	// [Serializable]
-	// public class RadioChannel
-	// {
-	// 	public string name;
-	// 	public string nameId;
-
-	// 	public string description;
-
-	// 	public string icon;
-
-	// 	public string network;
-
-	// 	public List<Program> programs = [];
-	// }
-	// [Serializable]
-	// public class Program
-	// {
-    //     public string name;
-
-    //     public string description;
-
-    //     public string icon;
-
-    //     public string startTime;
-
-    //     public string endTime;
-
-    //     public bool loopProgram;
-
-    //     public bool pairIntroOutro;
-
-    //     public List<Segment> segments = [];
-	// }
-	// [Serializable]
-	// public class jsSegment
-	// {
-    //     public Radio.SegmentType type;
-
-    //     public List<jsAudioAsset> clips = [];
-
-    //     public List<string> tags = [];
-
-    //     public int clipsCap;
-    // }
 	[Serializable]
 	public class jsAudioAsset
 	{

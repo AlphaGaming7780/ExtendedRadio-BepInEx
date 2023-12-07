@@ -21,6 +21,7 @@ namespace ExtendedRadio.Patches
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
 
+		static readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 		static readonly string CustomRadioPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio");
 		public static readonly string CustomRadiosPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadios");
 		static readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
@@ -37,8 +38,6 @@ namespace ExtendedRadio.Patches
 			}
 
 			Directory.CreateDirectory(CustomRadiosPath);
-
-			string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 
 			if(!Directory.Exists(resources)) {
 				Directory.CreateDirectory(resources);
@@ -65,12 +64,6 @@ namespace ExtendedRadio.Patches
 			);
 		}
 	}
-
-				// 	[
-				// 	Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-
-
-				// ]
 
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
