@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "TritonSupreme"
 name = "ExtendedRadio"
-versionNumber = "0.3.0"
+versionNumber = "0.3.1"
 description = "This mod aims to add features and improve existing ones for the game's radio player."
 websiteUrl = "https://github.com/AlphaGaming7780/ExtendedRadio"
 containsNsfwContent = false
