@@ -1,3 +1,6 @@
+# 0.3.1
+- Update: Readme.
+
 # 0.3.0
 - Add: A new folder can be used for Custom Radio outside of the mod folder to avoid is deletion when the mod update on Thunderstore Mod Manager. (`BepInEx/plugins/ExtendedRadio_mods/CustomRadios`)
 - Add: Complete new way to create radio, that support a lot of customization.
