@@ -326,7 +326,7 @@ namespace ExtendedRadio
 			jsAudioAsset jsAudioAsset = Decoder.Decode(File.ReadAllText(audioAssetFile)).Make<jsAudioAsset>();
 
 			AudioAsset audioAsset = new();
-			audioAsset.AddTag($"AudioFilePath={Path.GetDirectoryName(audioAssetFile)+"\\"+jsAudioAsset.SongName}");
+			audioAsset.AddTag($"AudioFilePath={audioAssetFile[..^".json".Count()]+".ogg"}");
 
 			Dictionary<Metatag, string> m_Metatags = [];
 			Traverse audioAssetTravers = Traverse.Create(audioAsset);
@@ -335,7 +335,7 @@ namespace ExtendedRadio
 
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
-			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, jsAudioAsset.Artist ?? track.Artist);
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", networkName ?? jsAudioAsset.RadioStation );

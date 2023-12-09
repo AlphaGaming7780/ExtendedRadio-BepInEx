@@ -12,7 +12,7 @@
 		<AssemblyName>ExtendedRadio</AssemblyName>
 		<RootNamespace>ExtendedRadio</RootNamespace>
 		<Description>This mod aims to add features and improve existing ones for the game's radio player.</Description>
-		<Version>0.3.1</Version>
+		<Version>0.3.2</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>preview</LangVersion>
 		<RestoreAdditionalProjectSources>
@@ -49,7 +49,7 @@
 	-->
 	<ItemGroup>
         <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Colossal.*.dll" Private="False"/>
-        <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Game.dll" Private="False"/>
+        <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Game*.dll" Private="False"/>
         <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Unity.*.dll" Private="False"/>
 		<Reference Include="cohtml.Net"><HintPath>$(Cities2_Location)\Cities2_Data\Managed\cohtml.Net.dll</HintPath><Private>False</Private></Reference>
 	</ItemGroup>
@@ -68,7 +68,7 @@
 	-->
 	<ItemGroup>
 		<Reference Include="libcs2/Colossal.*.dll" Private="False"/>
-		<Reference Include="libcs2/Game.dll" Private="False"/>
+		<Reference Include="libcs2/Game*.dll" Private="False"/>
 		<Reference Include="libcs2/Unity.*.dll" Private="False"/>
 	</ItemGroup>
 
