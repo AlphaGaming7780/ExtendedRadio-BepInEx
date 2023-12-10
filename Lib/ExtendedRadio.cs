@@ -331,7 +331,7 @@ namespace ExtendedRadio
 			Dictionary<Metatag, string> m_Metatags = [];
 			Traverse audioAssetTravers = Traverse.Create(audioAsset);
 
-			Track track = new(Path.GetDirectoryName(audioAssetFile)+"\\"+jsAudioAsset.SongName, true);
+			Track track = new(audioAssetFile[..^".json".Count()]+".ogg", true);
 
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);

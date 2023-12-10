@@ -7,18 +7,17 @@ namespace ExtendedRadio.JsonFormat
 	[Serializable]
 	public class jsAudioAsset
 	{
-		public string SongName = null;
 		public string Title = null;
-        public string Album = null;
-        public string Artist = null;
-        public string Type = null;
-        public string Brand = null;
-        public string RadioStation = null;
-        public string RadioChannel = null;
-        public string PSAType = null;
-        public string AlertType = null;
-        public string NewsType = null;
-        public string WeatherType = null;
+		public string Album = null;
+		public string Artist = null;
+		public string Type = null;
+		public string Brand = null;
+		public string RadioStation = null;
+		public string RadioChannel = null;
+		public string PSAType = null;
+		public string AlertType = null;
+		public string NewsType = null;
+		public string WeatherType = null;
 		// public double durationMs;
 		public double loopStart = -1;
 		public double loopEnd = -1;
