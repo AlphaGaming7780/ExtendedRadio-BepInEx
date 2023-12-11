@@ -137,15 +137,33 @@ namespace ExtendedRadio
 		static internal void AddAudioToDataBase(RadioChannel radioChannel) {
 			foreach(Program program in radioChannel.programs) {
 				foreach(Segment segment in program.segments) {
-					Dictionary<SegmentType, List<AudioAsset>> dict1 = [];
-					dict1.Add(segment.type, [..segment.clips]);
-
-					Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>> dict2 = [];
-					dict2.Add(program.name, dict1);
-
 					if(audioDataBase.ContainsKey(radioChannel.network)){
-						audioDataBase[radioChannel.network].Add(radioChannel.name, dict2);
+						if(audioDataBase[radioChannel.network].ContainsKey(radioChannel.name)) {
+							if(audioDataBase[radioChannel.network][radioChannel.name].ContainsKey(program.name)) {
+								audioDataBase[radioChannel.network][radioChannel.name][program.name].Add(segment.type, [..segment.clips]);
+							} else {
+								Dictionary<SegmentType, List<AudioAsset>> dict1 = [];
+								dict1.Add(segment.type, [..segment.clips]);
+
+								audioDataBase[radioChannel.network][radioChannel.name].Add(program.name, dict1);
+							}
+						} else {
+							Dictionary<SegmentType, List<AudioAsset>> dict1 = [];
+							dict1.Add(segment.type, [..segment.clips]);
+
+							Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>> dict2 = [];
+							dict2.Add(program.name, dict1);
+
+							audioDataBase[radioChannel.network].Add(radioChannel.name, dict2);
+						}	
 					} else {
+
+						Dictionary<SegmentType, List<AudioAsset>> dict1 = [];
+						dict1.Add(segment.type, [..segment.clips]);
+
+						Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>> dict2 = [];
+						dict2.Add(program.name, dict1);
+
 						Dictionary<string, Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>>> dict3 = [];
 						dict3.Add(radioChannel.name, dict2);
 						audioDataBase.Add(radioChannel.network, dict3);
