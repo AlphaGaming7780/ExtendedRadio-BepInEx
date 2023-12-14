@@ -20,9 +20,6 @@ namespace ExtendedRadio
 		public static event OnRadioLoad CallOnRadioLoad;
 
 		private static readonly List<string> radioDirectories = [GameManager_InitializeThumbnails.CustomRadiosPath];
-
-		private static readonly List<RadioChannel> customRadioChannels = [];
-		private static readonly List<RadioNetwork> customRadioNetworks = [];
 		internal static List<string> customeRadioChannelsName = [];
 		private static readonly List<string> customeNetworksName = [];
 		private static readonly Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>>>> audioDataBase = [];
@@ -34,8 +31,6 @@ namespace ExtendedRadio
 		private static int radioNetworkIndex;
 		static internal void OnLoadRadio(Radio __instance) {
 
-			customRadioChannels.Clear();
-			customRadioNetworks.Clear();
 			audioDataBase.Clear();
 
 			radioTravers = Traverse.Create(__instance);
@@ -224,6 +219,10 @@ namespace ExtendedRadio
 								clipsCap = 0,
 							};
 						}
+
+						if(segment.tags.Length <= 0) {
+							segment.tags = [(segment.type.ToString() == "Playlist" ? "Music" : segment.type.ToString()), radioChannel.name, radioChannel.network];
+						}
 						
 						foreach(string audioAssetDirectory in Directory.GetDirectories( segmentDirectory )) {
 							foreach(string audioAssetFile in Directory.GetFiles(audioAssetDirectory, "*.ogg")) {
@@ -231,9 +230,9 @@ namespace ExtendedRadio
 								string jsAudioAsset = audioAssetFile[..^".ogg".Count()]+".json";
 
 								if(File.Exists(jsAudioAsset)) {
-									segment.clips = segment.clips.AddToArray(JsonToAudioAsset(jsAudioAsset, radioChannel.network, radioChannel.name));
+									segment.clips = segment.clips.AddToArray(JsonToAudioAsset(jsAudioAsset, segment.type, radioChannel.network, radioChannel.name));
 								} else {
-									AudioAsset audioAsset = MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network);
+									AudioAsset audioAsset = MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type);
 									segment.clips = segment.clips.AddToArray(audioAsset);
 								}
 							}
@@ -257,8 +256,6 @@ namespace ExtendedRadio
 
 		static private RadioChannel CreateRadioFromPath(string path, string radioNetwork = null, RadioChannel radioChannel = null) {
 
-			Debug.Log("RadioChannel");
-
 			if(radioChannel == null) {
 
 				string radioName = new DirectoryInfo(path).Name;
@@ -277,14 +274,12 @@ namespace ExtendedRadio
 				};
 			}
 
-			Debug.Log("Segment");
-
 			Segment segment = new()
 			{
 				type = SegmentType.Playlist,
 				clipsCap = 0,
 				clips = [],
-				tags = ["type:Music", "radio channel:" + radioChannel.name]
+				tags = ["Music", radioChannel.name]
 			};
 
 			foreach(string audioAssetDirectory in Directory.GetDirectories( path )) {
@@ -293,16 +288,14 @@ namespace ExtendedRadio
 					string jsAudioAsset = audioAssetFile[..^".ogg".Count()]+".json";
 
 					if(File.Exists(jsAudioAsset)) {
-						segment.clips = segment.clips.AddToArray(JsonToAudioAsset(jsAudioAsset, radioChannel.network, radioChannel.name));
+						segment.clips = segment.clips.AddToArray(JsonToAudioAsset(jsAudioAsset, segment.type, radioChannel.network, radioChannel.name));
 					} else {
-						segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network));
+						segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type));
 					}
 				}
 			}
 
 			segment.clipsCap = segment.clips.Length;
-
-			Debug.Log("prgram");
 
 			Program program = new()
 			{
@@ -339,7 +332,7 @@ namespace ExtendedRadio
 
 		}
 
-		public static AudioAsset JsonToAudioAsset(string audioAssetFile, string networkName = null, string radioChannelName = null) {
+		public static AudioAsset JsonToAudioAsset(string audioAssetFile, SegmentType segmentType, string networkName = null, string radioChannelName = null) {
 
 			jsAudioAsset jsAudioAsset = Decoder.Decode(File.ReadAllText(audioAssetFile)).Make<jsAudioAsset>();
 
@@ -354,7 +347,7 @@ namespace ExtendedRadio
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Title, jsAudioAsset.Title ?? track.Title);
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Album, jsAudioAsset.Album ?? track.Album);
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, jsAudioAsset.Artist ?? track.Artist);
-			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? "Music");
+			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", jsAudioAsset.Type ?? (segmentType.ToString() == "Playlist" ? "Music" : segmentType.ToString()));
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", jsAudioAsset.Brand ?? "Brand");
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, track, "RADIO STATION", networkName ?? jsAudioAsset.RadioStation );
 			MusicLoader.AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, track, "RADIO CHANNEL", radioChannelName ?? jsAudioAsset.RadioChannel );

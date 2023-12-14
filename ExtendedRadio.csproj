@@ -12,7 +12,7 @@
 		<AssemblyName>ExtendedRadio</AssemblyName>
 		<RootNamespace>ExtendedRadio</RootNamespace>
 		<Description>This mod aims to add features and improve existing ones for the game's radio player.</Description>
-		<Version>0.3.3</Version>
+		<Version>0.3.4</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>preview</LangVersion>
 		<RestoreAdditionalProjectSources>
