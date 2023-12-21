@@ -49,7 +49,7 @@
 	-->
 	<ItemGroup>
         <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Colossal.*.dll" Private="False"/>
-        <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Game*.dll" Private="False"/>
+        <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Game.dll" Private="False"/>
         <Reference Include="$(Cities2_Location)\Cities2_Data\Managed\Unity.*.dll" Private="False"/>
 		<Reference Include="cohtml.Net"><HintPath>$(Cities2_Location)\Cities2_Data\Managed\cohtml.Net.dll</HintPath><Private>False</Private></Reference>
 	</ItemGroup>
@@ -68,7 +68,7 @@
 	-->
 	<ItemGroup>
 		<Reference Include="libcs2/Colossal.*.dll" Private="False"/>
-		<Reference Include="libcs2/Game*.dll" Private="False"/>
+		<Reference Include="libcs2/Game.dll" Private="False"/>
 		<Reference Include="libcs2/Unity.*.dll" Private="False"/>
 	</ItemGroup>
 
