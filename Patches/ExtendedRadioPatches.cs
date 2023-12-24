@@ -17,6 +17,7 @@ using Unity.Collections;
 using Game.City;
 using Unity.Entities;
 using Game.Prefabs;
+using Game.UI.InGame;
 
 namespace ExtendedRadio.Patches
 {
@@ -80,41 +81,6 @@ namespace ExtendedRadio.Patches
 		}
 	}
 
-	[HarmonyPatch(typeof(AudioAsset), "LoadAsync")]
-	internal class AudioAssetLoadAsyncPatch
-	{
-		static bool Prefix(AudioAsset __instance, ref Task<AudioClip> __result)
-		{	
-			if(!ExtendedRadio.customeRadioChannelsName.Contains(__instance.GetMetaTag(AudioAsset.Metatag.RadioChannel))) return true;
-			
-			__result = LoadAudioFile(__instance);
-			return false;
-		}
-
-		private static async Task<AudioClip> LoadAudioFile(AudioAsset audioAsset)
-		{
-			Traverse audioAssetTravers = Traverse.Create(audioAsset);
-
-			if(audioAssetTravers.Field("m_Instance").GetValue() == null)
-			{
-				string sPath = ExtendedRadio.GetClipPathFromAudiAsset(audioAsset);
-				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, AudioType.OGGVORBIS);
-				((DownloadHandlerAudioClip) www.downloadHandler).streamAudio = true;
-				await www.SendWebRequest();
-				AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-				www.Dispose();
-
-				clip.name = sPath;
-				clip.hideFlags = HideFlags.DontSave;
-
-				audioAssetTravers.Field("m_Instance").SetValue(clip);
-			}
-
-			return (AudioClip) audioAssetTravers.Field("m_Instance").GetValue();
-		}
-	}
-
-
 	[HarmonyPatch( typeof( Radio ), "GetPlaylistClips" )]
 	class Radio_GetPlaylistClips
 	{
@@ -145,33 +111,30 @@ namespace ExtendedRadio.Patches
 	[HarmonyPatch( typeof( Radio ), "GetCommercialClips" )]
 	class Radio_GetCommercialClips
 	{
-        static bool Prefix( Radio __instance, RuntimeSegment segment)
+		static bool Prefix(AudioAsset __instance, ref Task<AudioClip> __result)
+		{	
+			if(!ExtendedRadio.customeRadioChannelsName.Contains(__instance.GetMetaTag(AudioAsset.Metatag.RadioChannel))) return true;
+			__result = LoadAudioFile(__instance);
+			return false;
+		}
+
+		private static async Task<AudioClip> LoadAudioFile(AudioAsset audioAsset)
 		{
-			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
+			Traverse audioAssetTravers = Traverse.Create(audioAsset);
 
+			if(audioAssetTravers.Field("m_Instance").GetValue() == null)
+			{
+				string sPath = ExtendedRadio.GetClipPathFromAudiAsset(audioAsset);
+				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, ExtendedRadio.GetClipFormatFromAudiAsset(audioAsset));
+				((DownloadHandlerAudioClip) www.downloadHandler).streamAudio = true;
+				await www.SendWebRequest();
+				AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+				www.Dispose();
 
-				Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
+				clip.name = sPath;
+				clip.hideFlags = HideFlags.DontSave;
 
-				if (!m_Networks.TryGetValue(__instance.currentChannel.network, out var value) || !value.allowAds)
-				{	
-					return false;
-				}
-
-				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
-				List<AudioAsset> list = [.. assets];
-				System.Random rnd = new();
-				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
-								orderby rnd.Next()
-								select x).Take(segment.clipsCap).ToList();
-				AudioAsset[] array = new AudioAsset[segment.clipsCap];
-				for (int i = 0; i < array.Length; i++)
-				{
-					array[i] = list[list2[i]];
-				}
-
-				segment.clips = array;
-
-				return false;
+				audioAssetTravers.Field("m_Instance").SetValue(clip);
 			}
 			return true;
 		}
