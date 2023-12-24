@@ -11,12 +11,7 @@ using UnityEngine;
 using static Game.Audio.Radio.Radio;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
-using Colossal.Randomization;
-using Unity.Jobs;
-using Unity.Collections;
-using Game.City;
-using Unity.Entities;
-using Game.Prefabs;
+
 
 namespace ExtendedRadio.Patches
 {
@@ -27,32 +22,33 @@ namespace ExtendedRadio.Patches
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
 
-		static readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
-		static readonly string CustomRadioPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio");
+		static private readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 		public static readonly string CustomRadiosPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadios");
-		static readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
+		static private readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
 		public static readonly string PathToMods = Path.Combine(PathToParent,"ExtendedRadio_mods");
-		public static readonly string CustomRadioFolderPlugins = Path.Combine(PathToMods,"CustomRadios");
+		public static readonly string ModsFolderCustomRadio = Path.Combine(PathToMods,"CustomRadios");
+		public static readonly string ModsFolderRadioAddons = Path.Combine(PathToMods,"RadioAddons");
 
 		static void Prefix(GameManager __instance)
 		{		
 
 			List<string> pathToIconToLoad = [Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)];
 
-			if(Directory.Exists(CustomRadioPath)) {
-				Directory.Move(CustomRadioPath, CustomRadiosPath);
-			}
-
 			Directory.CreateDirectory(CustomRadiosPath);
+			CustomRadios.RegisterCustomRadioDirectory(CustomRadiosPath);
 
 			if(!Directory.Exists(resources)) {
 				Directory.CreateDirectory(resources);
 				File.Move(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DefaultIcon.svg"), Path.Combine(resources , "DefaultIcon.svg"));
 			}
 
-			if(Directory.Exists(CustomRadioFolderPlugins)) {
-				ExtendedRadio.RegisterCustomRadioDirectory(CustomRadioFolderPlugins);
+			if(Directory.Exists(ModsFolderCustomRadio)) {
+				CustomRadios.RegisterCustomRadioDirectory(ModsFolderCustomRadio);
 				pathToIconToLoad.Add(PathToMods);
+			}
+
+			if(Directory.Exists(ModsFolderRadioAddons)) {
+				RadioAddons.RegisterRadioAddonsDirectory(ModsFolderRadioAddons);
 			}
 
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
@@ -65,7 +61,6 @@ namespace ExtendedRadio.Patches
 			
 			gameUIResourceHandler.HostLocationsMap.Add(
 				IconsResourceKey, pathToIconToLoad
-
 			);
 		}
 	}
@@ -85,7 +80,7 @@ namespace ExtendedRadio.Patches
 	{
 		static bool Prefix(AudioAsset __instance, ref Task<AudioClip> __result)
 		{	
-			if(!ExtendedRadio.customeRadioChannelsName.Contains(__instance.GetMetaTag(AudioAsset.Metatag.RadioChannel))) return true;
+			if(!CustomRadios.customeRadioChannelsName.Contains(__instance.GetMetaTag(AudioAsset.Metatag.RadioChannel))) return true;
 			
 			__result = LoadAudioFile(__instance);
 			return false;
@@ -97,8 +92,8 @@ namespace ExtendedRadio.Patches
 
 			if(audioAssetTravers.Field("m_Instance").GetValue() == null)
 			{
-				string sPath = ExtendedRadio.GetClipPathFromAudiAsset(audioAsset);
-				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, ExtendedRadio.GetClipFormatFromAudiAsset(audioAsset));
+				string sPath = MusicLoader.GetClipPathFromAudiAsset(audioAsset);
+				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, MusicLoader.GetClipFormatFromAudiAsset(audioAsset));
 				((DownloadHandlerAudioClip) www.downloadHandler).streamAudio = true;
 				await www.SendWebRequest();
 				AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
@@ -120,9 +115,9 @@ namespace ExtendedRadio.Patches
 	{
 		static bool Prefix( Radio __instance, RuntimeSegment segment)
 		{		
-			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
+			if(CustomRadios.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
 
-				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
+				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudioAssetsFromAudioDataBase(__instance, segment.type);
 				List<AudioAsset> list = [.. assets];
 				System.Random rnd = new();
 				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
@@ -147,7 +142,7 @@ namespace ExtendedRadio.Patches
 	{
         static bool Prefix( Radio __instance, RuntimeSegment segment)
 		{
-			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
+			if(CustomRadios.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
 
 
 				Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
@@ -157,7 +152,7 @@ namespace ExtendedRadio.Patches
 					return false;
 				}
 
-				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
+				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudioAssetsFromAudioDataBase(__instance, segment.type);
 				List<AudioAsset> list = [.. assets];
 				System.Random rnd = new();
 				List<int> list2 = (from x in Enumerable.Range(0, list.Count)

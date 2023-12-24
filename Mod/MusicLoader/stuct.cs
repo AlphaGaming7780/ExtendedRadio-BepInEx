@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using Game.Audio.Radio;
 
-namespace ExtendedRadio.JsonFormat
+namespace ExtendedRadio
 {	
 	[Serializable]
-	public class jsAudioAsset
+	public class JsonAudioAsset
 	{
 		public string AudioFileFormat = "OGG";
 		public string Title = null;
