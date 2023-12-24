@@ -98,7 +98,7 @@ namespace ExtendedRadio.Patches
 			if(audioAssetTravers.Field("m_Instance").GetValue() == null)
 			{
 				string sPath = ExtendedRadio.GetClipPathFromAudiAsset(audioAsset);
-				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, AudioType.OGGVORBIS);
+				using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + sPath, ExtendedRadio.GetClipFormatFromAudiAsset(audioAsset));
 				((DownloadHandlerAudioClip) www.downloadHandler).streamAudio = true;
 				await www.SendWebRequest();
 				AudioClip clip = DownloadHandlerAudioClip.GetContent(www);

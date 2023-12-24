@@ -7,6 +7,7 @@ namespace ExtendedRadio.JsonFormat
 	[Serializable]
 	public class jsAudioAsset
 	{
+		public string AudioFileFormat = "OGG";
 		public string Title = null;
 		public string Album = null;
 		public string Artist = null;

@@ -42,54 +42,54 @@ namespace ExtendedRadio
 			foreach(string radioDirectory in radioDirectories) {
 				foreach(string radioNetwork in Directory.GetDirectories( radioDirectory )) {
 					if(radioNetwork != radioDirectory) {
-						if(Directory.GetFiles(radioNetwork, "*.ogg").Length == 0) {
+						// if(Directory.GetFiles(radioNetwork, "*.ogg").Length == 0) {
 							
-							RadioNetwork network = new();
+						RadioNetwork network = new();
 
-							if(Directory.GetFiles(radioNetwork, "RadioNetwork.json").Length > 0) {
-								network = JsonToRadioNetwork(radioNetwork);
-							} else {
-								network.nameId = new DirectoryInfo(radioNetwork).Name;
-								network.description = "A custom Network";
-								network.descriptionId = "A custom Network";
-								network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
-								network.allowAds = true;
-							}
-							network.name = new DirectoryInfo(radioNetwork).Name;
-							network.uiPriority = radioNetworkIndex++;
-							
-							if(!m_Networks.ContainsKey(network.name)) {
-								customeNetworksName.Add(network.name);
-								m_Networks.Add(network.name, network);
-							}
-							
-							foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
-
-								RadioChannel radioChannel;
-
-								if(!File.Exists(radioStation+"//RadioChannel.json")) {
-									radioChannel =CreateRadioFromPath(radioStation, network.name);
-								} else {
-									radioChannel = JsonToRadio(radioStation, network.name);
-								}
-										
-								AddAudioToDataBase(radioChannel);
-								customeRadioChannelsName.Add(radioChannel.name);
-								m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
-							}
+						if(Directory.GetFiles(radioNetwork, "RadioNetwork.json").Length > 0) {
+							network = JsonToRadioNetwork(radioNetwork);
 						} else {
+							network.nameId = new DirectoryInfo(radioNetwork).Name;
+							network.description = "A custom Network";
+							network.descriptionId = "A custom Network";
+							network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
+							network.allowAds = true;
+						}
+						network.name = new DirectoryInfo(radioNetwork).Name;
+						network.uiPriority = radioNetworkIndex++;
+						
+						if(!m_Networks.ContainsKey(network.name)) {
+							customeNetworksName.Add(network.name);
+							m_Networks.Add(network.name, network);
+						}
+						
+						foreach(string radioStation in Directory.GetDirectories( radioNetwork )) {
+
 							RadioChannel radioChannel;
 
-							if(!File.Exists(radioNetwork+"//RadioChannel.json")) {
-								radioChannel = CreateRadioFromPath(radioNetwork, "Public Citizen Radio");
+							if(!File.Exists(radioStation+"//RadioChannel.json")) {
+								radioChannel =CreateRadioFromPath(radioStation, network.name);
 							} else {
-								radioChannel = JsonToRadio(radioNetwork, "Public Citizen Radio");
+								radioChannel = JsonToRadio(radioStation, network.name);
 							}
-							
+									
 							AddAudioToDataBase(radioChannel);
 							customeRadioChannelsName.Add(radioChannel.name);
-							m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioNetwork));
+							m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
 						}
+						// } else {
+						// 	RadioChannel radioChannel;
+
+						// 	if(!File.Exists(radioNetwork+"//RadioChannel.json")) {
+						// 		radioChannel = CreateRadioFromPath(radioNetwork, "Public Citizen Radio");
+						// 	} else {
+						// 		radioChannel = JsonToRadio(radioNetwork, "Public Citizen Radio");
+						// 	}
+							
+						// 	AddAudioToDataBase(radioChannel);
+						// 	customeRadioChannelsName.Add(radioChannel.name);
+						// 	m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioNetwork));
+						// }
 					}
 				}
 			}
@@ -232,8 +232,7 @@ namespace ExtendedRadio
 								if(File.Exists(jsAudioAsset)) {
 									segment.clips = segment.clips.AddToArray(JsonToAudioAsset(jsAudioAsset, segment.type, radioChannel.network, radioChannel.name));
 								} else {
-									AudioAsset audioAsset = MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type);
-									segment.clips = segment.clips.AddToArray(audioAsset);
+									segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type));
 								}
 							}
 						}
@@ -338,6 +337,7 @@ namespace ExtendedRadio
 
 			AudioAsset audioAsset = new();
 			audioAsset.AddTag($"AudioFilePath={audioAssetFile[..^".json".Count()]+".ogg"}");
+			audioAsset.AddTag($"AudioFileFormat={jsAudioAsset.AudioFileFormat.ToUpper()}");
 
 			Dictionary<Metatag, string> m_Metatags = [];
 			Traverse audioAssetTravers = Traverse.Create(audioAsset);
@@ -417,6 +417,31 @@ namespace ExtendedRadio
 		static internal List<AudioAsset> GetAudiAssetsFromAudioDataBase(Radio radio, SegmentType type) {
 
 			return audioDataBase[radio.currentChannel.network][radio.currentChannel.name][radio.currentChannel.currentProgram.name][type];
+		}
+
+		internal static AudioType GetClipFormatFromAudiAsset(AudioAsset audioAsset) {
+
+			foreach(string s in audioAsset.tags) {
+				if(s.Contains("AudioFileFormat=")) {
+
+					return s["AudioFileFormat=".Length..] switch
+					{
+						"ACC" => AudioType.ACC,
+						"AIFF" => AudioType.AIFF,
+						"IT" => AudioType.IT,
+						"MOD" => AudioType.MOD,
+						"MPEG" => AudioType.MPEG,
+						"S3M" => AudioType.S3M,
+						"WAV" => AudioType.WAV,
+						"XM" => AudioType.XM,
+						"XMA" => AudioType.XMA,
+						"VAG" => AudioType.VAG,
+						"AUDIOQUEUE" => AudioType.AUDIOQUEUE,
+						_ => AudioType.OGGVORBIS,
+					};
+				}
+			}
+			return AudioType.OGGVORBIS;
 		}
 	}
 }
