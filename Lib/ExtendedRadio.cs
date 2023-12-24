@@ -12,9 +12,9 @@ using HarmonyLib;
 using System.Linq;
 using UnityEngine;
 
-namespace ExtendedRadio
+namespace ExtendedRadio.CustomRadios
 {
-	public class ExtendedRadio
+	public class CustomRadios
 	{   
 		public delegate void OnRadioLoad();
 		public static event OnRadioLoad CallOnRadioLoad;
