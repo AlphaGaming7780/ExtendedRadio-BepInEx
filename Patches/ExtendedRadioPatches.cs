@@ -11,12 +11,6 @@ using UnityEngine;
 using static Game.Audio.Radio.Radio;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
-using Colossal.Randomization;
-using Unity.Jobs;
-using Unity.Collections;
-using Game.City;
-using Unity.Entities;
-using Game.Prefabs;
 
 namespace ExtendedRadio.Patches
 {
@@ -27,7 +21,6 @@ namespace ExtendedRadio.Patches
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
 
-		static readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 		static readonly string CustomRadioPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadio");
 		public static readonly string CustomRadiosPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadios");
 		static readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
@@ -45,11 +38,14 @@ namespace ExtendedRadio.Patches
 
 			Directory.CreateDirectory(CustomRadiosPath);
 
+			string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
+
 			if(!Directory.Exists(resources)) {
 				Directory.CreateDirectory(resources);
 				File.Move(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DefaultIcon.svg"), Path.Combine(resources , "DefaultIcon.svg"));
 			}
 
+			Debug.Log(CustomRadioFolderPlugins);
 			if(Directory.Exists(CustomRadioFolderPlugins)) {
 				ExtendedRadio.RegisterCustomRadioDirectory(CustomRadioFolderPlugins);
 				pathToIconToLoad.Add(PathToMods);
@@ -70,6 +66,12 @@ namespace ExtendedRadio.Patches
 		}
 	}
 
+				// 	[
+				// 	Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+
+
+				// ]
+
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
 
@@ -77,6 +79,33 @@ namespace ExtendedRadio.Patches
 
 			ExtendedRadio.OnLoadRadio(__instance);
 
+		}
+	}
+
+	[HarmonyPatch( typeof( Radio ), "GetPlaylistClips" )]
+	class Radio_GetPlaylistClips
+	{
+		static bool Prefix( Radio __instance, RuntimeSegment segment)
+		{		
+			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
+
+				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
+				List<AudioAsset> list = [.. assets];
+				System.Random rnd = new();
+				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
+								orderby rnd.Next()
+								select x).Take(segment.clipsCap).ToList();
+				AudioAsset[] array = new AudioAsset[segment.clipsCap];
+				for (int i = 0; i < array.Length; i++)
+				{
+					array[i] = list[list2[i]];
+				}
+
+				segment.clips = array;
+
+				return false;
+			}
+			return true;
 		}
 	}
 
@@ -111,69 +140,6 @@ namespace ExtendedRadio.Patches
 			}
 
 			return (AudioClip) audioAssetTravers.Field("m_Instance").GetValue();
-		}
-	}
-
-
-	[HarmonyPatch( typeof( Radio ), "GetPlaylistClips" )]
-	class Radio_GetPlaylistClips
-	{
-		static bool Prefix( Radio __instance, RuntimeSegment segment)
-		{		
-			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
-
-				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
-				List<AudioAsset> list = [.. assets];
-				System.Random rnd = new();
-				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
-								orderby rnd.Next()
-								select x).Take(segment.clipsCap).ToList();
-				AudioAsset[] array = new AudioAsset[segment.clipsCap];
-				for (int i = 0; i < array.Length; i++)
-				{
-					array[i] = list[list2[i]];
-				}
-
-				segment.clips = array;
-
-				return false;
-			}
-			return true;
-		}
-	}
-
-	[HarmonyPatch( typeof( Radio ), "GetCommercialClips" )]
-	class Radio_GetCommercialClips
-	{
-        static bool Prefix( Radio __instance, RuntimeSegment segment)
-		{
-			if(ExtendedRadio.customeRadioChannelsName.Contains(__instance.currentChannel.name)) {
-
-
-				Dictionary<string, RadioNetwork> m_Networks = Traverse.Create(__instance).Field("m_Networks").GetValue<Dictionary<string, RadioNetwork>>();
-
-				if (!m_Networks.TryGetValue(__instance.currentChannel.network, out var value) || !value.allowAds)
-				{	
-					return false;
-				}
-
-				IEnumerable<AudioAsset> assets = ExtendedRadio.GetAudiAssetsFromAudioDataBase(__instance, segment.type);
-				List<AudioAsset> list = [.. assets];
-				System.Random rnd = new();
-				List<int> list2 = (from x in Enumerable.Range(0, list.Count)
-								orderby rnd.Next()
-								select x).Take(segment.clipsCap).ToList();
-				AudioAsset[] array = new AudioAsset[segment.clipsCap];
-				for (int i = 0; i < array.Length; i++)
-				{
-					array[i] = list[list2[i]];
-				}
-
-				segment.clips = array;
-
-				return false;
-			}
-			return true;
 		}
 	}
 }

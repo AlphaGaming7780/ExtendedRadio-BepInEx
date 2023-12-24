@@ -1,16 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using ATL;
 using Colossal.IO.AssetDatabase;
 using HarmonyLib;
 using static Colossal.IO.AssetDatabase.AudioAsset;
-using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio
 {
 	internal class MusicLoader
 	{   
+		private static List<AudioAsset> audioAssets = [];
 
-		internal static AudioAsset LoadAudioData( string filePath, string radioChannel, string radioNetwork, SegmentType segmentType )  /*IEnumerator*/
+		internal static AudioAsset[] LoadAllAudioClips( string path, string radioChannel, string radioNetwork )
+		{   
+			audioAssets.Clear();
+			var oggFiles = Directory.GetFiles( path, "*.ogg" );
+			foreach ( var oggFile in oggFiles )
+			{	
+				audioAssets.Add(LoadAudioData( oggFile, radioChannel, radioNetwork ));
+			}
+
+			return [..audioAssets];
+		}
+
+		internal static AudioAsset LoadAudioData( string filePath, string radioChannel, string radioNetwork )  /*IEnumerator*/
 		{
 			Dictionary<Metatag, string> m_Metatags = [];
 
@@ -23,8 +36,8 @@ namespace ExtendedRadio
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Title, track.Title);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Album, track.Album);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.Artist, track.Artist);
-			AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", segmentType.ToString() == "Playlist" ? "Music" : segmentType.ToString());
-			AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND", segmentType.ToString() == "Commercial" ? track.Title : null); 
+			AddMetaTag(audioAsset, m_Metatags, Metatag.Type, track, "TYPE", "Music");
+			AddMetaTag(audioAsset, m_Metatags, Metatag.Brand, track, "BRAND");
 			AddMetaTag(audioAsset, m_Metatags, Metatag.RadioStation, radioNetwork);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.RadioChannel, radioChannel);
 			AddMetaTag(audioAsset, m_Metatags, Metatag.PSAType, track, "PSA TYPE");
