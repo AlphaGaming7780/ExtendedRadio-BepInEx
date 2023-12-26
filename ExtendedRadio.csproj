@@ -20,11 +20,11 @@
 			https://nuget.bepinex.dev/v3/index.json;
 			https://nuget.samboy.dev/v3/index.json
 		</RestoreAdditionalProjectSources>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<!-- Copies references we make to 3rd party library for distributions -->
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<!-- Suppress the version conflict warnings for System.Net.Http and System.IO.Compression -->
-		<NoWarn>MSB3277, CS1591</NoWarn>
+		<NoWarn>MSB3277</NoWarn>
 	</PropertyGroup>
 
 	<!--
@@ -37,15 +37,15 @@
 
 	<ItemGroup>
 		<None Remove="resources\DefaultIcon.svg" />
-		<None Remove="ressouces\ui.js"/>
+		<!-- <None Remove="ressouces\ui.js"/> -->
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="resources\DefaultIcon.svg">
 		  	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="resources\ui.js">
+		<!-- <Content Include="resources\ui.js">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+	  </Content> -->
 	</ItemGroup>
 
 	<!--
@@ -126,10 +126,10 @@
 			Command="if not exist &quot; $(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)&quot;&#xD;&#xA;
 					copy /Y &quot;$(TargetDir)0Harmony.dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\0Harmony.dll&quot;&#xD;&#xA;
 					copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).dll&quot;&#xD;&#xA;
-					copy /Y &quot;$(TargetDir)$(ProjectName).xml&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).xml&quot;&#xD;&#xA;
 					if not exist &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot; mkdir &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources&quot;&#xD;&#xA;	
-					copy /Y &quot;$(TargetDir)resources\ui.js&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources\ui.js&quot;
+					
 					"/>
 	</Target>
 </Project>
 <!-- copy /Y &quot;$(TargetDir)resources\ui.js&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\resources\ui.js&quot; -->
+<!-- copy /Y &quot;$(TargetDir)$(ProjectName).xml&quot; &quot;$(Cities2_Location)\BepInEx\plugins\$(ProjectName)\$(ProjectName).xml&quot;&#xD;&#xA; -->
