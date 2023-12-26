@@ -1,13 +1,13 @@
 using System.IO;
 using System.Collections.Generic;
 using Colossal.Json;
-using Game.Audio.Radio;
 using static Game.Audio.Radio.Radio;
 using ExtendedRadio.Patches;
 using HarmonyLib;
 
 namespace ExtendedRadio
 {
+	/// <summary>This is the main class for the CustomRadios feature.</summary>
 	public class CustomRadios
 	{
 		private static readonly List<string> radioDirectories = [];
@@ -31,7 +31,7 @@ namespace ExtendedRadio
 						RadioNetwork network = new();
 
 						if(File.Exists(radioNetwork + "//RadioNetwork.json")) {
-							network = JsonToRadioNetwork(radioNetwork);
+							network = JsonToRadioNetwork(radioNetwork+"\\RadioNetwork.json");
 						} else {
 							network.nameId = new DirectoryInfo(radioNetwork).Name;
 							network.description = "A custom Network";
@@ -82,11 +82,15 @@ namespace ExtendedRadio
 			ExtendedRadio.radioTravers.Field("m_RadioChannels").SetValue(m_RadioChannels);
 			ExtendedRadio.radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
 		}
-
+		/// <summary>This methode add you folder that contains your radio to the list of radio to load.</summary>
+		/// <param name="path">The global path to the folder that contains your custom radio</param>
 		public static void RegisterCustomRadioDirectory(string path) {
 			radioDirectories.Add(path);
 		}
 
+		/// <summary>This methode add your Network to the game.</summary>
+		/// <param name="radioNetwork"> The RadioNetwork object you want to add to the game </param>
+		/// <returns>True if the radio network was successfully added to the game, false otherwise.</returns>
 		public static bool AddRadioNetworkToTheGame(RadioNetwork radioNetwork) {
 
 			if(m_Networks.ContainsKey(radioNetwork.name)) return false;
@@ -97,7 +101,10 @@ namespace ExtendedRadio
 
 			return true;
 		}
-
+		/// <summary>Add your radio channel to the game.</summary>
+		/// <param name="radioChannel">The radio channel to add.</param>
+		/// <param name="path">(OPTIONAL) The global path to the radio channel, default = "".</param>
+		/// <returns>True if the radio channel was successfully added to the game, false otherwise.</returns>
 		public static bool AddRadioChannelToTheGame( RadioChannel radioChannel, string path = "") {
 
 			if (customeRadioChannelsName.Contains(radioChannel.name)) return false;
@@ -109,14 +116,10 @@ namespace ExtendedRadio
 			return true;
 		}
 
-		public static RadioNetwork JsonToRadioNetwork(string path) {
-			return Decoder.Decode(File.ReadAllText(path+"\\RadioNetwork.json")).Make<RadioNetwork>();
-		}
-
-		public static string RadioNetworkToJson( RadioNetwork radioNetwork) {
-			return Encoder.Encode(radioNetwork, EncodeOptions.None);
-		}
-
+		/// <summary>Create a whole radio.</summary>
+		/// <param name="path">Path to the folder that contain the RadioChannel.json</param>
+		/// <param name="radioNetwork">(OPTIONAL) The name of the folder that contain the RadioNetwork.json</param>
+		/// <returns>The RadioChannel with all the program/Segment and audio file.</returns>
 		public static RadioChannel JsonToRadio(string path, string radioNetwork = null) {
 			
 			RadioChannel radioChannel = Decoder.Decode(File.ReadAllText(path+"\\RadioChannel.json")).Make<RadioChannel>();
@@ -268,14 +271,37 @@ namespace ExtendedRadio
 
 		}
 
+		/// <summary>Convert your JSON file to a RadioNetwork.</summary>
+		/// <param name="path">Global path to the JSON file that contain the RadioNetwork</param>
+		/// <returns>The RadioNetwork created from this JSON.</returns>
+		public static RadioNetwork JsonToRadioNetwork(string path) {
+			return Decoder.Decode(File.ReadAllText(path)).Make<RadioNetwork>();
+		}
+
+		/// <summary>Convert your RadioNetwork to a JSON string.</summary>
+		/// <param name="radioNetwork">The RadioNetwork you want to convert into a JSON string.</param>
+		/// <returns>The RadioNetwork created from this JSON.</returns>
+		public static string RadioNetworkToJson( RadioNetwork radioNetwork) {
+			return Encoder.Encode(radioNetwork, EncodeOptions.None);
+		}
+
+		/// <summary>Convert your JSON file to a RadioChannel.</summary>
+		/// <param name="path">Global path to the JSON file that contain the RadioChannel</param>
+		/// <returns>The RadioChannel created from this JSON.</returns>
 		public static RadioChannel JsonToRadioChannel(string path) {
 			return Decoder.Decode(File.ReadAllText(path+"\\RadioChannel.json")).Make<RadioChannel>();
 		}
 
+		/// <summary>Convert your JSON file to a Program.</summary>
+		/// <param name="path">Global path to the JSON file that contain the Program</param>
+		/// <returns>The Program created from this JSON.</returns>
 		public static Program JsonToProgram(string path) {
 			return Decoder.Decode(File.ReadAllText(path+"\\Program.json")).Make<Program>();
 		}
 
+		/// <summary>Convert your JSON file to a Segment.</summary>
+		/// <param name="path">Global path to the JSON file that contain the Segment</param>
+		/// <returns>The Segment created from this JSON.</returns>
 		public static Segment JsonToSegment(string path) {
 
 			Segment segment = Decoder.Decode(File.ReadAllText(path+"\\Segment.json")).Make<Segment>();
@@ -284,6 +310,9 @@ namespace ExtendedRadio
 
 		}
 
+		/// <summary>Convert a string to a SegmentType.</summary>
+		/// <param name="s">The string.</param>
+		/// <returns>The SegmentType.</returns>
 		public static SegmentType StringToSegmentType(string s) {
             return s switch
             {

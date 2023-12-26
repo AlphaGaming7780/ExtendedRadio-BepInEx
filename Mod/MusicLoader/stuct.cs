@@ -1,7 +1,9 @@
 using System;
 
 namespace ExtendedRadio
-{	
+{
+	/// <summary>The class that contain all the info for the audio json.</summary>
+				
 	[Serializable]
 	public class JsonAudioAsset
 	{

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Colossal.Json;
-using UnityEngine;
 
 namespace ExtendedRadio
 {
@@ -17,7 +16,6 @@ namespace ExtendedRadio
 						foreach(string audioFileFolder in Directory.GetDirectories(folder)) {
 							foreach(string audioAssetFile in Directory.GetFiles(audioFileFolder, "*.ogg")) {
 								ExtendedRadio.audioDataBase[jsonRadioAddons.RadioNetwork][jsonRadioAddons.RadioChannel][jsonRadioAddons.Program][CustomRadios.StringToSegmentType(jsonRadioAddons.SegmentType)].Add(MusicLoader.LoadAudioFile(audioAssetFile, CustomRadios.StringToSegmentType(jsonRadioAddons.SegmentType), jsonRadioAddons.RadioNetwork, jsonRadioAddons.RadioChannel));
-
 							}
 						}
 					}

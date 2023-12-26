@@ -12,17 +12,18 @@ using static Game.Audio.Radio.Radio;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
-
 namespace ExtendedRadio.Patches
 {
 	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
 	internal class GameManager_InitializeThumbnails
 	{	
+		internal static  GameObject extendedRadioGameObject = new();
+		// internal static ExtendedRadioUi extendedRadioUi;
 		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}";
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
 
-		static private readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
+		static internal readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 		public static readonly string CustomRadiosPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadios");
 		static private readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
 		public static readonly string PathToMods = Path.Combine(PathToParent,"ExtendedRadio_mods");
@@ -62,6 +63,9 @@ namespace ExtendedRadio.Patches
 			gameUIResourceHandler.HostLocationsMap.Add(
 				IconsResourceKey, pathToIconToLoad
 			);
+
+			// extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUi>();
+
 		}
 	}
 
@@ -171,4 +175,16 @@ namespace ExtendedRadio.Patches
 			return true;
 		}
 	}
+	
+	// [HarmonyPatch( typeof( GamePanelUISystem ), "ShowPanel", typeof(GamePanel) )]
+	// class GamePanelUISystem_TogglePanel : UISystemBase 
+	// {
+	// 	static void Postfix( GamePanelUISystem __instance, GamePanel panel) {
+
+	// 		Debug.Log(panel.GetType());
+	// 		if(panel.GetType().ToString() == "Game.UI.InGame.RadioPanel") {
+	// 			GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(File.ReadAllText(GameManager_InitializeThumbnails.resources+"\\ui.js"));
+	// 		}
+	// 	}
+	// }
 }

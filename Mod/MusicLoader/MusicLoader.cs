@@ -212,6 +212,5 @@ namespace ExtendedRadio
 			}
 			return AudioType.OGGVORBIS;
 		}
-
     }
 }

@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Colossal.IO.AssetDatabase;
 using Game.Audio.Radio;
 using HarmonyLib;
+using UnityEngine;
 using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio
@@ -28,7 +30,6 @@ namespace ExtendedRadio
 			} catch {}
 
 		}
-
 
 		static internal void AddAudioToDataBase(RadioChannel radioChannel) {
 			foreach(Program program in radioChannel.programs) {
@@ -75,6 +76,13 @@ namespace ExtendedRadio
 		static internal List<AudioAsset> GetAudioAssetsFromAudioDataBase(Radio radio, SegmentType type) {
 
 			return audioDataBase[radio.currentChannel.network][radio.currentChannel.name][radio.currentChannel.currentProgram.name][type];
+		}
+		/// <summary>This methode add you folder that contains your radio to the list of radio to load.</summary>
+		/// <param name="path">The global path to the folder that contains your custom radio</param>
+		[Obsolete("Please, use ExtendedRadio.CustomRadios.RegisterCustomRadioDirectory(path).")]
+		public static void RegisterCustomRadioDirectory(string path) {
+			Debug.LogWarning("ExtendedRadio.ExtendedRadio.RegisterCustomRadioDirectory(string path) is Obsolete, use ExtendedRadio.CustomRadios.RegisterCustomRadioDirectory(string path) instead.");
+			CustomRadios.RegisterCustomRadioDirectory(path);
 		}
 
 	}
