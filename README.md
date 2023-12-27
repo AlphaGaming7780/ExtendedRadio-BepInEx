@@ -27,10 +27,11 @@ If you download it from the GitHub or the Thunderstore page without using the mo
 - ❌ Improve the UI (Progress bar, ...).
 - ❌ Blacklist system.
 - ❌ Improve the API to give more freedom and possibility to modders.
+- ✔️ Radio Add-ons (Add audio file in cutom radio).
 - ✔️ Radio Mode (For mod and add more customisation).
 - ✔️ Loading Meta tag from the audio file. (Title, Author, ...)
 - ✔️ Randomise the clips.
-- ✔️ Custom Radio (Personal radio only).
+- ✔️ Custom Radios
 
 # Acknowledgment
 - [Captain-Of-Coit](https://github.com/Captain-Of-Coit)
