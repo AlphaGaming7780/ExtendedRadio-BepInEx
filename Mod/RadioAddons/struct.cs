@@ -3,7 +3,7 @@ using System;
 namespace ExtendedRadio
 {	
 	[Serializable]
-    public class JsonRadioAddons
+    public class RadioAddon
     {	
 		/// <summary>The name of the folder that contains the RadioNetwork.json of the Network tou want to add this addon./// </summary>
 		public string RadioNetwork = null;

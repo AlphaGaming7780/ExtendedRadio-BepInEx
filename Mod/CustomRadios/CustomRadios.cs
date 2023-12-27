@@ -31,17 +31,24 @@ namespace ExtendedRadio
 						RadioNetwork network = new();
 
 						if(File.Exists(radioNetwork + "//RadioNetwork.json")) {
-							network = JsonToRadioNetwork(radioNetwork+"\\RadioNetwork.json");
+							network = JsonToRadioNetwork(radioNetwork);
 						} else {
-							network.nameId = new DirectoryInfo(radioNetwork).Name;
+							network.name = new DirectoryInfo(radioNetwork).Name;
 							network.description = "A custom Network";
 							network.descriptionId = "A custom Network";
 							network.icon = File.Exists(Path.Combine(radioNetwork, "icon.svg")) ? $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{new DirectoryInfo(radioNetwork).Name}/icon.svg" : $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
 							network.allowAds = true;
 						}
-						network.name = new DirectoryInfo(radioNetwork).Name;
-						network.uiPriority = radioNetworkIndex++;
+
+						if(network.name == "" && network.nameId != "") {
+							network.name = network.nameId;
+						}
 						
+						network.nameId = network.name;
+
+						// network.name = new DirectoryInfo(radioNetwork).Name;
+						network.uiPriority = radioNetworkIndex++;
+
 						if(!m_Networks.ContainsKey(network.name)) {
 							customeNetworksName.Add(network.name);
 							m_Networks.Add(network.name, network);
@@ -61,19 +68,7 @@ namespace ExtendedRadio
 							customeRadioChannelsName.Add(radioChannel.name);
 							m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
 						}
-						// } else {
-						// 	RadioChannel radioChannel;
 
-						// 	if(!File.Exists(radioNetwork+"//RadioChannel.json")) {
-						// 		radioChannel = CreateRadioFromPath(radioNetwork, "Public Citizen Radio");
-						// 	} else {
-						// 		radioChannel = JsonToRadio(radioNetwork, "Public Citizen Radio");
-						// 	}
-							
-						// 	AddAudioToDataBase(radioChannel);
-						// 	customeRadioChannelsName.Add(radioChannel.name);
-						// 	m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioNetwork));
-						// }
 					}
 				}
 			}
@@ -129,6 +124,8 @@ namespace ExtendedRadio
 				radioChannel.name = radioChannel.name + "_" + ExtendedRadio.radioTravers.Method("MakeUniqueRandomName", radioChannel.name, 4).GetValue<string>();
 			}
 
+			radioChannel.nameId = radioChannel.name;
+
 			if(radioNetwork != null) {
 				radioChannel.network = radioNetwork;
 			}
@@ -175,13 +172,6 @@ namespace ExtendedRadio
 								
 								segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioFile(audioAssetFile, segment.type, radioChannel.network, radioChannel.name));
 
-								// string jsAudioAsset = audioAssetFile[..^".ogg".Count()]+".json";
-
-								// if(File.Exists(jsAudioAsset)) {
-								// 	segment.clips = segment.clips.AddToArray(MusicLoader.JsonToAudioAsset(jsAudioAsset, segment.type, radioChannel.network, radioChannel.name));
-								// } else {
-								// 	segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type));
-								// }
 							}
 						}
 
@@ -201,7 +191,7 @@ namespace ExtendedRadio
 		}
 
 
-		static private RadioChannel CreateRadioFromPath(string path, string radioNetwork = null, RadioChannel radioChannel = null) {
+		static private RadioChannel CreateRadioFromPath(string path, string radioNetwork, RadioChannel radioChannel = null) {
 
 			if(radioChannel == null) {
 
@@ -210,7 +200,7 @@ namespace ExtendedRadio
 				string iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
 
 				if(File.Exists(path+"\\icon.svg")) {
-					iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{radioNetwork}/{radioName}/icon.svg";
+					iconPath = $"{GameManager_InitializeThumbnails.COUIBaseLocation}/CustomRadios/{ new DirectoryInfo(path).Parent.Name}/{radioName}/icon.svg";
 				}
 
 				while (m_RadioChannels.ContainsKey(radioName))
@@ -239,14 +229,7 @@ namespace ExtendedRadio
 				foreach(string audioAssetFile in Directory.GetFiles(audioAssetDirectory, "*.ogg")) {
 
 					segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioFile(audioAssetFile, segment.type, radioChannel.network, radioChannel.name));
-					
-					// string jsAudioAsset = audioAssetFile[..^".ogg".Count()]+".json";
 
-					// if(File.Exists(jsAudioAsset)) {
-					// 	segment.clips = segment.clips.AddToArray(MusicLoader.JsonToAudioAsset(jsAudioAsset, segment.type, radioChannel.network, radioChannel.name));
-					// } else {
-					// 	segment.clips = segment.clips.AddToArray(MusicLoader.LoadAudioData(audioAssetFile, radioChannel.name, radioChannel.network, segment.type));
-					// }
 				}
 			}
 
@@ -275,7 +258,7 @@ namespace ExtendedRadio
 		/// <param name="path">Global path to the JSON file that contain the RadioNetwork</param>
 		/// <returns>The RadioNetwork created from this JSON.</returns>
 		public static RadioNetwork JsonToRadioNetwork(string path) {
-			return Decoder.Decode(File.ReadAllText(path)).Make<RadioNetwork>();
+			return Decoder.Decode(File.ReadAllText(path+"\\RadioNetwork.json")).Make<RadioNetwork>();
 		}
 
 		/// <summary>Convert your RadioNetwork to a JSON string.</summary>
