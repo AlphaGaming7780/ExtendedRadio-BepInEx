@@ -5,7 +5,7 @@ using Colossal.Json;
 
 namespace ExtendedRadio
 {
-	class RadioAddons
+	public class RadioAddons
 	{
 		private static readonly List<string> addonsDirectories = [];
 		internal static void LoadRadioAddons() {

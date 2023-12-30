@@ -11,14 +11,25 @@ using UnityEngine;
 using static Game.Audio.Radio.Radio;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
+using Game.UI.InGame;
+using Game.Common;
 
 namespace ExtendedRadio.Patches
 {
+
+    [HarmonyPatch(typeof(SystemOrder), "Initialize")]
+    public static class SystemOrderPatch {
+        public static void Postfix(Game.UpdateSystem updateSystem) {
+            updateSystem.UpdateAt<ExtendedRadioUI>(Game.SystemUpdatePhase.UIUpdate);
+        }
+    }
+
+
 	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
 	internal class GameManager_InitializeThumbnails
 	{	
 		internal static  GameObject extendedRadioGameObject = new();
-		// internal static ExtendedRadioUi extendedRadioUi;
+		internal static ExtendedRadioUI_Mono extendedRadioUi;
 		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}";
 
 		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
@@ -64,7 +75,9 @@ namespace ExtendedRadio.Patches
 				IconsResourceKey, pathToIconToLoad
 			);
 
-			// extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUi>();
+			extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUI_Mono>();
+
+			Settings.LoadSettings();
 
 		}
 	}
@@ -176,15 +189,19 @@ namespace ExtendedRadio.Patches
 		}
 	}
 	
-	// [HarmonyPatch( typeof( GamePanelUISystem ), "ShowPanel", typeof(GamePanel) )]
-	// class GamePanelUISystem_TogglePanel : UISystemBase 
-	// {
-	// 	static void Postfix( GamePanelUISystem __instance, GamePanel panel) {
+	[HarmonyPatch( typeof( GamePanelUISystem ), "ShowPanel", typeof(GamePanel) )]
+	class GamePanelUISystem_TogglePanel : UISystemBase 
+	{
+		static void Postfix( GamePanelUISystem __instance, GamePanel panel) {
+			if(panel.GetType().ToString() == "Game.UI.InGame.RadioPanel") {
 
-	// 		Debug.Log(panel.GetType());
-	// 		if(panel.GetType().ToString() == "Game.UI.InGame.RadioPanel") {
-	// 			GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(File.ReadAllText(GameManager_InitializeThumbnails.resources+"\\ui.js"));
-	// 		}
-	// 	}
-	// }
+				GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("Setup.js"));
+
+				GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("ExtendedRadioSettings.js"));
+				if(Settings.customNetworkUI) {
+					GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("RadioNetworkFix.js"));
+				}
+			}
+		}
+	}
 }

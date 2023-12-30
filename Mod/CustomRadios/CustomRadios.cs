@@ -40,9 +40,7 @@ namespace ExtendedRadio
 							network.allowAds = true;
 						}
 
-						if(network.name == "" && network.nameId != "") {
-							network.name = network.nameId;
-						}
+						network.icon ??= $"{GameManager_InitializeThumbnails.COUIBaseLocation}/resources/DefaultIcon.svg";
 						
 						network.nameId = network.name;
 
