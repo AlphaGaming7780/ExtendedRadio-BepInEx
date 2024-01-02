@@ -1,4 +1,4 @@
-var ExtendedRadio_radioPanel = document.getElementsByClassName("panel_YqS")[0]
+var ExtendedRadio_radioPanel = document.getElementsByClassName("radio-panel_rXp")[0]
 
 var ExtendedRadio_radioPannelTop = document.getElementsByClassName("title-bar_PF4")[0]
 var ExtendedRadio_space = document.getElementsByClassName("icon-space_h_f")[0]

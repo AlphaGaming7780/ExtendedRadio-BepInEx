@@ -1,4 +1,3 @@
-var ExtendedRadio_FirstTimeOpeningSettingsPanel = true
 var ExtendedRadio_settingsPanelBool = false
 var ExtendedRadio_settingsPanel_OpenTab = null
 var ExtendedRadio_settingsPanel_SelectedTabButton = null
@@ -15,6 +14,7 @@ function ExtendedRadio_CreateSettingsButton() {
 	var ExtendedRadio_settingsButton = document.createElement("button", document.getElementsByClassName("close-button_wKK")[0]);
 	var ExtendedRadio_settingsButtonImage = document.createElement("div")
 	ExtendedRadio_settingsButton.className = "ExtendedRadio_settingsButton button_bvQ"
+	
 	ExtendedRadio_settingsButton.addEventListener("click", function() {
 		if(!ExtendedRadio_settingsPanelBool) {
 			if(ExtendedRadio_settingsPanel == null) CreateSettingsPanel()
@@ -26,7 +26,6 @@ function ExtendedRadio_CreateSettingsButton() {
 			ExtendedRadio_settingsPanel.style.display = "none"
 			ExtendedRadio_settingsPanelBool = false
 		}
-		// engine.trigger("extended_radio.open_settings")
 	})
 	
 	ExtendedRadio_settingsButtonImage.className = "ExtendedRadio_settingsButtonImage tinted-icon_iKo icon_PhD"
@@ -81,8 +80,6 @@ function CreateSettingsPanel() {
 
 	ExtendedRadio_settingsPanel.appendChild(ExtendedRadio_settingsPanel_TabsButton)
 	ExtendedRadio_settingsPanel.appendChild(ExtendedRadio_settingsPanel_Tabs)
-
-	ExtendedRadio_FirstTimeOpeningSettingsPanel = false
 
 	ExtendedRadio_radioPanel.appendChild(ExtendedRadio_settingsPanel)
 }
