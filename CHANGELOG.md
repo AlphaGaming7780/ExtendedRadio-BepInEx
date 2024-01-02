@@ -1,10 +1,13 @@
-# 0.5.0-pre-1
+# 0.5.0-pre-2
 
 > [!IMPORTANT]  
-> This version remove the support for the old api.
+> This version remove the support for the old API.
 
 - New UI
-- bug fixed
+- Add settings UI
+- Add settings.json in `ExtendedRadio-mods` folder
+- Compatible with HookUi
+- Fixed bug
 
 # 0.4.0
 

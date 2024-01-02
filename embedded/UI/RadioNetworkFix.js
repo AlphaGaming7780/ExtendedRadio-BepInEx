@@ -3,6 +3,7 @@ var ExtendedRadio_networksContainer = document.createElement("div")
 ExtendedRadio_stationsMenu.style.width = "325rem" 
 ExtendedRadio_stationsMenu.style.flexDirection = "row"
 
+// ExtendedRadio_networksContainer.className = "scrollable_DXr"
 ExtendedRadio_networksContainer.style.width = "23%"
 ExtendedRadio_networksContainer.style.height = "100%"
 ExtendedRadio_networksContainer.style.overflowY = "auto"
@@ -31,6 +32,7 @@ document.getElementsByClassName("network-item_tGo").forEach(element => {
 });
 
 ExtendedRadio_networksContainer.appendChild(ExtendedRadio_networks)
+// ExtendedRadio_CreateScrollBar(ExtendedRadio_networksContainer)
 // ExtendedRadio_networksContainer.appendChild(bar)
 ExtendedRadio_stationsMenu.insertBefore(ExtendedRadio_networksContainer, ExtendedRadio_stations)
 

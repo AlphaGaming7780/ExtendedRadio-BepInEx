@@ -24,3 +24,16 @@ function ExtendedRadio_getterValue(event, element, onUpdate) {
         sub.clear()
     };
 }
+
+function ExtendedRadio_CreateScrollBar(element) {
+
+    var ExtendedRadio_ScrollBarTop = document.createElement("div")
+    var ExtendedRadio_ScrollBarBot = document.createElement("div")
+
+    ExtendedRadio_ScrollBarTop.className = "track_e3O y_SMM"
+    ExtendedRadio_ScrollBarBot.className = "thumb_Cib y_SMM"
+
+    ExtendedRadio_ScrollBarTop.appendChild(ExtendedRadio_ScrollBarBot)
+    element.appendChild(ExtendedRadio_ScrollBarTop)
+
+}
