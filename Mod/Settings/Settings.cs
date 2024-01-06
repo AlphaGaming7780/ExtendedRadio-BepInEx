@@ -8,6 +8,7 @@ namespace ExtendedRadio
 	public class Settings
 	{
 		public static bool customNetworkUI = true;
+		public static bool DisableAdsOnStartup = false;
 
 		internal static void LoadSettings() {
 			if(Directory.Exists(GameManager_InitializeThumbnails.PathToMods)) {
@@ -23,21 +24,24 @@ namespace ExtendedRadio
 		}
 
 		private static SettingsJSON SettingsToJSON() {
-            SettingsJSON settingsJSON = new()
-            {
-                customNetworkUI = customNetworkUI
-            };
-            return settingsJSON;
+			SettingsJSON settingsJSON = new()
+			{
+				customNetworkUI = customNetworkUI,
+				DisableAdsOnStartup = DisableAdsOnStartup
+			};
+			return settingsJSON;
 		}
 
 		private static void JsonToSettings(SettingsJSON settingsJSON) {
 			customNetworkUI = settingsJSON.customNetworkUI;
+			DisableAdsOnStartup = settingsJSON.DisableAdsOnStartup;
 		}
 	}
 	[Serializable]
 	public class SettingsJSON
 	{
 		public bool customNetworkUI = true;
+		public bool DisableAdsOnStartup = false;
 	}
 
 }

@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Colossal.IO.AssetDatabase;
 using Game.Audio.Radio;
 using HarmonyLib;
-using UnityEngine;
 using static Game.Audio.Radio.Radio;
 
 namespace ExtendedRadio
@@ -15,12 +13,12 @@ namespace ExtendedRadio
 		public static event OnRadioLoad CallOnRadioLoad;
 		internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<SegmentType, List<AudioAsset>>>>> audioDataBase = [];
 		public static Traverse radioTravers = null;
-		public static Radio radioObject = null;
+		public static Radio radio = null;
 		static internal void OnLoadRadio(Radio __instance) { 
 
 			audioDataBase.Clear();
 
-			radioObject = __instance;
+			radio = __instance;
 			radioTravers = Traverse.Create(__instance);
 
 			CustomRadios.LoadCustomRadios();
@@ -30,6 +28,7 @@ namespace ExtendedRadio
 				CallOnRadioLoad();
 			} catch {}
 
+			__instance.skipAds = true;
 		}
 
 		static internal void AddAudioToDataBase(RadioChannel radioChannel) {

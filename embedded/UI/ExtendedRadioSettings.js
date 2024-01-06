@@ -67,11 +67,14 @@ function CreateSettingsPanel() {
 	// ExtendedRadio_settingsPanel_TabsButton.style.backgroundColor = "rgba(0,0,255, 0.2)"
 
 	ExtendedRadio_CreateSettingsCat("Global")
+	ExtendedRadio_CreateSettingsCatToggle("Global", "Disable ads on startup", "extended_radio_settings.DisableAdsOnStartup")
+	ExtendedRadio_CreateSettingsCatButton("Global", "Reload Radio", "extended_radio.reloadradio")
+
 	ExtendedRadio_CreateSettingsCat("UI")
+	ExtendedRadio_CreateSettingsCatToggle("UI", "Custom network UI", "extended_radio_settings.customnetworkui")
 
 	ExtendedRadio_SetDefaultOpenSettingsPanel("Global")
 
-	ExtendedRadio_CreateSettingsToggle("UI", "Custom network UI", "extended_radio_settings.customnetworkui")
 	// ExtendedRadio_settingsPanel_TabPanelDict["UI"].innerHTML = getterValue("extended_radio_settings.customsetworkui")
 
 	ExtendedRadio_settingsPanel.className = "ExtendedRadio_settingsPanel base_V9Q " + ExtendedRadio_radioPanelBottom.className
@@ -141,7 +144,7 @@ function ExtendedRadio_SetDefaultOpenSettingsPanel(name) {
 	ExtendedRadio_settingsPanel_SelectedTabButton.className = "selected " + ExtendedRadio_settingsPanel_SelectedTabButton.className
 }
 
-function ExtendedRadio_CreateSettingsToggle(panelname, name, event) {
+function ExtendedRadio_CreateSettingsCatToggle(panelname, name, event) {
 
 	var ExtendedRadio_settingsContainer = document.createElement("div")
 	var ExtendedRadio_settingsToggleLabel = document.createElement("div")
@@ -160,7 +163,7 @@ function ExtendedRadio_CreateSettingsToggle(panelname, name, event) {
 
 	ExtendedRadio_settingsContainer.addEventListener("click", function () {
 		// ExtendedRadio_Check(ExtendedRadio_settingsContainer.childNodes[1], !ExtendedRadio_isCheck(ExtendedRadio_settingsContainer.childNodes[1]))
-		engine.trigger(event+"sendvalue", !ExtendedRadio_isCheck(ExtendedRadio_settingsContainer.childNodes[1]))
+		engine.trigger(event, !ExtendedRadio_isCheck(ExtendedRadio_settingsContainer.childNodes[1]))
 	})
 
 	ExtendedRadio_settingsContainer.appendChild(ExtendedRadio_settingsToggleLabel)
@@ -170,6 +173,42 @@ function ExtendedRadio_CreateSettingsToggle(panelname, name, event) {
 	ExtendedRadio_getterValue(event, ExtendedRadio_settingsToggle, ExtendedRadio_Check)
 
 	// ExtendedRadio_Check(ExtendedRadio_settingsToggle, )
+
+	ExtendedRadio_settingsPanel_TabPanelDict[panelname].appendChild(ExtendedRadio_settingsContainer)
+}
+
+function ExtendedRadio_CreateSettingsCatButton(panelname, name, event) {
+
+	var ExtendedRadio_settingsContainer = document.createElement("div")
+	var ExtendedRadio_settingsButton = document.createElement("button")
+
+	ExtendedRadio_settingsContainer.className = "buttons_hd7"
+	ExtendedRadio_settingsButton.className = "button_WWa button_SH8"
+
+	ExtendedRadio_settingsButton.style.backgroundColor = "rgba(255, 255, 255, 1)"
+	ExtendedRadio_settingsButton.style.borderColor = "rgba(212, 23, 23, 1)"
+	ExtendedRadio_settingsButton.style.color = "rgba(212, 23, 23, 1)"
+	ExtendedRadio_settingsButton.innerHTML = name
+
+	ExtendedRadio_settingsButton.addEventListener("click", function () {
+		engine.trigger(event)
+	})
+
+	ExtendedRadio_settingsButton.addEventListener("mouseover", function () {
+
+		this.style.backgroundColor = "rgba(212, 23, 23, 1)"
+		this.style.color = "rgba(255, 255, 255, 1)"
+
+	})
+
+	ExtendedRadio_settingsButton.addEventListener("mouseout", function () {
+
+		this.style.backgroundColor = "rgba(255, 255, 255, 1)"
+		this.style.color = "rgba(212, 23, 23, 1)"
+
+	})
+
+	ExtendedRadio_settingsContainer.appendChild(ExtendedRadio_settingsButton)
 
 	ExtendedRadio_settingsPanel_TabPanelDict[panelname].appendChild(ExtendedRadio_settingsContainer)
 }

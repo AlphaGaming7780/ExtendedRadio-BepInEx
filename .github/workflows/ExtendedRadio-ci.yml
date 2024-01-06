@@ -2,10 +2,10 @@ name: RadioExtended-ci
 
 on:
   push:
-    branches: [ "DEV" ]
+    # branches: [ "DEV" ]
     tags: [ "v*" ]
 env:
-  RELEASE_TAG: ${{ github.ref == 'refs/heads/DEV' && 'v0.5.0-pre-2' || github.ref_name }}
+  RELEASE_TAG: ${{ github.ref == 'refs/heads/DEV' && 'v0.5.0-pre-3' || github.ref_name }}
 
 jobs:
   build:

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 using Game.UI.InGame;
 using Game.Common;
+using Game.Audio;
 
 namespace ExtendedRadio.Patches
 {
@@ -77,8 +78,6 @@ namespace ExtendedRadio.Patches
 
 			extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUI_Mono>();
 
-			Settings.LoadSettings();
-
 		}
 	}
 
@@ -89,6 +88,18 @@ namespace ExtendedRadio.Patches
 
 			ExtendedRadio.OnLoadRadio(__instance);
 
+		}
+	}
+
+	[HarmonyPatch(typeof( RadioUISystem ), "OnCreate")]
+	class RadioUISystem_OnCreate {
+
+		static bool Prefix( RadioUISystem __instance) {
+
+			Settings.LoadSettings();
+			AudioManager.instance.radio.skipAds = Settings.DisableAdsOnStartup;
+			
+			return true;
 		}
 	}
 

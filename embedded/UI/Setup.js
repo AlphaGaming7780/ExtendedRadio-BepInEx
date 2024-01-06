@@ -10,9 +10,9 @@ var ExtendedRadio_stations = document.getElementsByClassName("stations_mU1")[0]
 var ExtendedRadio_programs = document.getElementsByClassName("list_Kl3")[0]
 
 function ExtendedRadio_getterValue(event, element, onUpdate) {
-    const updateEvent = event + "getvalue" + ".update"
-    const subscribeEvent = event + "getvalue" + ".subscribe"
-    const unsubscribeEvent = event + "getvalue" + ".unsubscribe"
+    const updateEvent = event + ".update"
+    const subscribeEvent = event + ".subscribe"
+    const unsubscribeEvent = event + ".unsubscribe"
     
     var sub = engine.on(updateEvent, (data) => {
         element && onUpdate(element, data)
