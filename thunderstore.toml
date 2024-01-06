@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "TritonSupreme"
 name = "ExtendedRadio"
-versionNumber = "0.4.0"
+versionNumber = "0.5.0"
 description = "This mod aims to add features and improve existing ones for the game's radio player."
 websiteUrl = "https://github.com/AlphaGaming7780/ExtendedRadio"
 containsNsfwContent = false
@@ -21,4 +21,4 @@ outdir = "./ts-build"
 [publish]
 repository = "https://thunderstore.io"
 communities = [ "cities-skylines-ii", ]
-categories = [ "mods", "audio"]
+categories = [ "mods", "audio", "libraries"]

@@ -1,4 +1,4 @@
-# 0.5.0-pre-2
+# 0.5.0
 
 > [!IMPORTANT]  
 > This version remove the support for the old API.
