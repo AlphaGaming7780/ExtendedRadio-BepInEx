@@ -27,7 +27,7 @@ If you download it from the GitHub or the Thunderstore page without using the mo
 ## Feature roadmap
 - ❌ Blacklist system.
 - ❌ Improve the API to give more freedom and possibility to modders.
-- ✔️ Improve the UI (Progress bar, ...).
+- ✔️ Improve the UI.
 - ✔️ Radio Add-ons (Add audio file in cutom radio).
 - ✔️ Custom Radios
 
