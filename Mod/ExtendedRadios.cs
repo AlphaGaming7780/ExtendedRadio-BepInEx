@@ -27,8 +27,6 @@ namespace ExtendedRadio
 			try {
 				CallOnRadioLoad();
 			} catch {}
-
-			__instance.skipAds = true;
 		}
 
 		static internal void AddAudioToDataBase(RadioChannel radioChannel) {

@@ -1,3 +1,8 @@
+# 0.5.1
+
+- Update: Readme.
+- Fixed: Ads not loading.
+
 # 0.5.0
 
 > [!IMPORTANT]  

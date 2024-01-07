@@ -93,13 +93,9 @@ namespace ExtendedRadio.Patches
 
 	[HarmonyPatch(typeof( RadioUISystem ), "OnCreate")]
 	class RadioUISystem_OnCreate {
-
-		static bool Prefix( RadioUISystem __instance) {
-
+		static void Prefix(RadioUISystem __instance) {
 			Settings.LoadSettings();
 			AudioManager.instance.radio.skipAds = Settings.DisableAdsOnStartup;
-			
-			return true;
 		}
 	}
 
