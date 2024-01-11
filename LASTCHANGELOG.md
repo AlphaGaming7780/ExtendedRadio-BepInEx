@@ -1,3 +1,4 @@
-# 0.5.1
+# 0.5.2
 
-- Fixed: Ads not loading.
+- Add: Sounds to the new UI.
+- Update: Credit

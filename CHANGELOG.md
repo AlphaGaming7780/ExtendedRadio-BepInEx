@@ -1,3 +1,8 @@
+# 0.5.2
+
+- Add: Sounds to the new UI.
+- Update: Credit
+
 # 0.5.1
 
 - Update: Readme.

@@ -32,6 +32,7 @@ If you download it from the GitHub or the Thunderstore page without using the mo
 - ✔️ Custom Radios
 
 # Acknowledgment
+- [optimus-code](https://thunderstore.io/c/cities-skylines-ii/p/Cities2Modding/)
 - [Captain-Of-Coit](https://github.com/Captain-Of-Coit)
 - [DragonOfMercy](https://github.com/dragonofmercy)
 - [CityRat](https://thunderstore.io/c/cities-skylines-ii/p/CityRat/)

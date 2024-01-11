@@ -16,6 +16,7 @@ function ExtendedRadio_CreateSettingsButton() {
 	ExtendedRadio_settingsButton.className = "ExtendedRadio_settingsButton button_bvQ"
 	
 	ExtendedRadio_settingsButton.addEventListener("click", function() {
+		engine.trigger("audio.playSound", "select-item", 1);
 		if(!ExtendedRadio_settingsPanelBool) {
 			if(ExtendedRadio_settingsPanel == null) CreateSettingsPanel()
 			ExtendedRadio_radioPanelBottom.style.display = "none"
@@ -26,6 +27,10 @@ function ExtendedRadio_CreateSettingsButton() {
 			ExtendedRadio_settingsPanel.style.display = "none"
 			ExtendedRadio_settingsPanelBool = false
 		}
+	})
+
+	ExtendedRadio_settingsButton.addEventListener("mouseenter", function() {
+		engine.trigger("audio.playSound", "hover-item", 1);
 	})
 	
 	ExtendedRadio_settingsButtonImage.className = "ExtendedRadio_settingsButtonImage tinted-icon_iKo icon_PhD"
@@ -111,6 +116,7 @@ function ExtendedRadio_setupTabButton(tabButton) {
 
 	tabButton.addEventListener("click", function() {
 
+		engine.trigger("audio.playSound", "select-item", 1);
 		ExtendedRadio_settingsPanel_SelectedTabButton.classList.remove('selected');
 		ExtendedRadio_settingsPanel_SelectedTabButton = tabButton
 		ExtendedRadio_settingsPanel_SelectedTabButton.className = "selected " + ExtendedRadio_settingsPanel_SelectedTabButton.className
@@ -118,6 +124,11 @@ function ExtendedRadio_setupTabButton(tabButton) {
 		ExtendedRadio_settingsPanel_OpenTab.style.display = "none"
 		ExtendedRadio_settingsPanel_OpenTab = ExtendedRadio_settingsPanel_TabPanelDict[tabButton.innerHTML]
 		ExtendedRadio_settingsPanel_OpenTab.style.display = "flex"
+
+	})
+
+	tabButton.addEventListener("mouseenter", function() {
+		engine.trigger("audio.playSound", "hover-item", 1);
 	})
 
 	ExtendedRadio_settingsPanel_TabsButton.appendChild(tabButton)
@@ -163,7 +174,12 @@ function ExtendedRadio_CreateSettingsCatToggle(panelname, name, event) {
 
 	ExtendedRadio_settingsContainer.addEventListener("click", function () {
 		// ExtendedRadio_Check(ExtendedRadio_settingsContainer.childNodes[1], !ExtendedRadio_isCheck(ExtendedRadio_settingsContainer.childNodes[1]))
+		engine.trigger("audio.playSound", "select-item", 1);
 		engine.trigger(event, !ExtendedRadio_isCheck(ExtendedRadio_settingsContainer.childNodes[1]))
+	})
+
+	ExtendedRadio_settingsContainer.addEventListener("mouseenter", function() {
+		engine.trigger("audio.playSound", "hover-item", 1);
 	})
 
 	ExtendedRadio_settingsContainer.appendChild(ExtendedRadio_settingsToggleLabel)
@@ -191,6 +207,7 @@ function ExtendedRadio_CreateSettingsCatButton(panelname, name, event) {
 	ExtendedRadio_settingsButton.innerHTML = name
 
 	ExtendedRadio_settingsButton.addEventListener("click", function () {
+		engine.trigger("audio.playSound", "select-item", 1);
 		engine.trigger(event)
 	})
 
@@ -206,6 +223,10 @@ function ExtendedRadio_CreateSettingsCatButton(panelname, name, event) {
 		this.style.backgroundColor = "rgba(255, 255, 255, 1)"
 		this.style.color = "rgba(212, 23, 23, 1)"
 
+	})
+
+	ExtendedRadio_settingsButton.addEventListener("mouseenter", function() {
+		engine.trigger("audio.playSound", "hover-item", 1);
 	})
 
 	ExtendedRadio_settingsContainer.appendChild(ExtendedRadio_settingsButton)
