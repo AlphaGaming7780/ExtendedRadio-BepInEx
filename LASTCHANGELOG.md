@@ -1,4 +1,3 @@
-# 0.5.2
+# 0.5.3
 
-- Add: Sounds to the new UI.
-- Update: Credit
+- Add Settings: Load last radio on startup

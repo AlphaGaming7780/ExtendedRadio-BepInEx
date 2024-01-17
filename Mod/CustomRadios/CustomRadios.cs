@@ -4,6 +4,7 @@ using Colossal.Json;
 using static Game.Audio.Radio.Radio;
 using ExtendedRadio.Patches;
 using HarmonyLib;
+using System.Dynamic;
 
 namespace ExtendedRadio
 {
@@ -65,8 +66,11 @@ namespace ExtendedRadio
 							ExtendedRadio.AddAudioToDataBase(radioChannel);
 							customeRadioChannelsName.Add(radioChannel.name);
 							m_RadioChannels.Add(radioChannel.name, radioChannel.CreateRuntime(radioStation));
+							
+							if(Settings.SaveLastRadio && Settings.LastRadio == radioChannel.name) {
+								ExtendedRadio.radio.currentChannel = m_RadioChannels[radioChannel.name];
+							}
 						}
-
 					}
 				}
 			}

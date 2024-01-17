@@ -14,6 +14,7 @@ namespace ExtendedRadio
 
 		private GetterValueBinding<bool> customnetworkui;
 		private GetterValueBinding<bool> DisableAdsOnStartup;
+		private GetterValueBinding<bool> SaveLastRadio;
 
         protected override void OnCreate() {
 
@@ -25,6 +26,9 @@ namespace ExtendedRadio
 			
 			AddBinding(DisableAdsOnStartup = new GetterValueBinding<bool>("extended_radio_settings", "DisableAdsOnStartup", () => Settings.DisableAdsOnStartup));
 			AddBinding(new TriggerBinding<bool>("extended_radio_settings", "DisableAdsOnStartup", new Action<bool>(UpdateSettings_disableAdsOnStartup)));
+
+			AddBinding(SaveLastRadio = new GetterValueBinding<bool>("extended_radio_settings", "SaveLastRadio", () => Settings.SaveLastRadio));
+			AddBinding(new TriggerBinding<bool>("extended_radio_settings", "SaveLastRadio", new Action<bool>(UpdateSettings_saveLastRadio)));
 
 			AddBinding(new TriggerBinding("extended_radio", "reloadradio", new Action(ReloadRadio)));
         }
@@ -41,12 +45,15 @@ namespace ExtendedRadio
 			DisableAdsOnStartup.Update();
 		}
 
-		private void ReloadRadio() {
-			ExtendedRadio.radio.Reload(true);
+		private void UpdateSettings_saveLastRadio(bool newValue) {
+			Settings.SaveLastRadio = newValue;
+			if(newValue) Settings.LastRadio = ExtendedRadio.radio.currentChannel.name;
+			Settings.SaveSettings();
+			SaveLastRadio.Update();
 		}
 
-		private void SettingsButtonCallBack() {
-			Debug.Log("YEAH");
+		private void ReloadRadio() {
+			ExtendedRadio.radio.Reload(true);
 		}
 
 		internal static string GetStringFromEmbbededJSFile(string path) {

@@ -73,6 +73,7 @@ function CreateSettingsPanel() {
 
 	ExtendedRadio_CreateSettingsCat("Global")
 	ExtendedRadio_CreateSettingsCatToggle("Global", "Disable ads on startup", "extended_radio_settings.DisableAdsOnStartup")
+	ExtendedRadio_CreateSettingsCatToggle("Global", "Load last radio on startup", "extended_radio_settings.SaveLastRadio")
 	ExtendedRadio_CreateSettingsCatButton("Global", "Reload Radio", "extended_radio.reloadradio")
 
 	ExtendedRadio_CreateSettingsCat("UI")

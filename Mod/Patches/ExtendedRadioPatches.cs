@@ -99,6 +99,16 @@ namespace ExtendedRadio.Patches
 		}
 	}
 
+	[HarmonyPatch(typeof( RadioUISystem ), "SelectStation", typeof(string))]
+	class RadioUISystem_SelectStation {
+		static void Postfix(string name) {
+			if(Settings.SaveLastRadio) {
+				Settings.LastRadio = name;
+				Settings.SaveSettings();
+			}
+		}
+	}
+
 	[HarmonyPatch(typeof(AudioAsset), "LoadAsync")]
 	internal class AudioAssetLoadAsyncPatch
 	{
@@ -200,7 +210,7 @@ namespace ExtendedRadio.Patches
 	class GamePanelUISystem_TogglePanel : UISystemBase 
 	{
 		static void Postfix( GamePanelUISystem __instance, GamePanel panel) {
-			if(panel.GetType().ToString() == "Game.UI.InGame.RadioPanel") {
+			if(panel is RadioPanel) { //panel.GetType().ToString() == "Game.UI.InGame.RadioPanel"
 
 				GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("Setup.js"));
 

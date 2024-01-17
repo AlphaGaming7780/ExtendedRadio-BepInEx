@@ -9,6 +9,8 @@ namespace ExtendedRadio
 	{
 		public static bool customNetworkUI = true;
 		public static bool DisableAdsOnStartup = false;
+		public static bool SaveLastRadio = false;
+		public static string LastRadio = null;
 
 		internal static void LoadSettings() {
 			if(Directory.Exists(GameManager_InitializeThumbnails.PathToMods)) {
@@ -27,7 +29,9 @@ namespace ExtendedRadio
 			SettingsJSON settingsJSON = new()
 			{
 				customNetworkUI = customNetworkUI,
-				DisableAdsOnStartup = DisableAdsOnStartup
+				DisableAdsOnStartup = DisableAdsOnStartup,
+				SaveLastRadio = SaveLastRadio,
+				LastRadio = LastRadio
 			};
 			return settingsJSON;
 		}
@@ -35,6 +39,8 @@ namespace ExtendedRadio
 		private static void JsonToSettings(SettingsJSON settingsJSON) {
 			customNetworkUI = settingsJSON.customNetworkUI;
 			DisableAdsOnStartup = settingsJSON.DisableAdsOnStartup;
+			SaveLastRadio = settingsJSON.SaveLastRadio;
+			LastRadio = settingsJSON.LastRadio;
 		}
 	}
 	[Serializable]
@@ -42,6 +48,8 @@ namespace ExtendedRadio
 	{
 		public bool customNetworkUI = true;
 		public bool DisableAdsOnStartup = false;
+		public bool SaveLastRadio = false;
+		public string LastRadio = null;
 	}
 
 }

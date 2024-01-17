@@ -1,3 +1,7 @@
+# 0.5.3
+
+- Add Settings: Load last radio on startup
+
 # 0.5.2
 
 - Add: Sounds to the new UI.
