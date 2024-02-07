@@ -19,7 +19,6 @@ namespace ExtendedRadio
 
 			base.OnCreate();
 
-            // AddBinding(new TriggerBinding("extended_radio", "open_settings", new Action(SettingsButtonCallBack)));
 			AddBinding(customnetworkui = new GetterValueBinding<bool>("extended_radio_settings", "customnetworkui", () => Settings.customNetworkUI));
 			AddBinding(new TriggerBinding<bool>("extended_radio_settings", "customnetworkui", new Action<bool>(UpdateSettings_customNetworkUi)));
 			
@@ -44,11 +43,6 @@ namespace ExtendedRadio
 		private void ReloadRadio() {
 			ExtendedRadio.radio.Reload(true);
 		}
-
-		private void SettingsButtonCallBack() {
-			Debug.Log("YEAH");
-		}
-
 		internal static string GetStringFromEmbbededJSFile(string path) {
 			return new StreamReader(ExtendedRadio.GetEmbedded("UI."+path)).ReadToEnd();
 		}
