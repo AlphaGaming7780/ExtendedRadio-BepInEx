@@ -97,12 +97,7 @@ namespace ExtendedRadio
 		public static void RegisterCustomRadioDirectory(string path) {
 			if(radioDirectories.Contains(path)) return;
 			radioDirectories.Add(path);
-			GameManager_InitializeThumbnails.AddNewIconsFolder(new DirectoryInfo(path).Parent.FullName);
-			Plugin.Logger.LogMessage("New Radio");
-			foreach(string s in radioDirectories) {
-				Plugin.Logger.LogMessage(s);
-			}
-			
+			GameManager_InitializeThumbnails.AddNewIconsFolder(new DirectoryInfo(path).Parent.FullName);			
 		}
 
 		/// <summary>This methode add your Network to the game.</summary>
