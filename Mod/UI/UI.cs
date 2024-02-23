@@ -11,7 +11,8 @@ namespace ExtendedRadio
 	
 	class ExtendedRadioUI : UISystemBase
 	{	
-
+		internal static  GameObject extendedRadioGameObject = new();
+		internal static ExtendedRadioUI_Mono extendedRadioUi;
 		private GetterValueBinding<bool> customnetworkui;
 		private GetterValueBinding<bool> DisableAdsOnStartup;
 		private GetterValueBinding<bool> SaveLastRadio;
@@ -20,6 +21,8 @@ namespace ExtendedRadio
 
 			base.OnCreate();
 
+			extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUI_Mono>();
+			
 			AddBinding(customnetworkui = new GetterValueBinding<bool>("extended_radio_settings", "customnetworkui", () => Settings.customNetworkUI));
 			AddBinding(new TriggerBinding<bool>("extended_radio_settings", "customnetworkui", new Action<bool>(UpdateSettings_customNetworkUi)));
 			

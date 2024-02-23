@@ -14,27 +14,14 @@ using UnityEngine.Networking;
 using Game.UI.InGame;
 using Game.Common;
 using Game.Audio;
+using Game.Areas;
 
 namespace ExtendedRadio.Patches
 {
 
-    [HarmonyPatch(typeof(SystemOrder), "Initialize")]
-    public static class SystemOrderPatch {
-        public static void Postfix(Game.UpdateSystem updateSystem) {
-            updateSystem.UpdateAt<ExtendedRadioUI>(Game.SystemUpdatePhase.UIUpdate);
-        }
-    }
-
-
-	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
-	internal class GameManager_InitializeThumbnails
+	[HarmonyPatch(typeof(GameManager), "Awake")]
+	internal class GameManager_Awake
 	{	
-		internal static  GameObject extendedRadioGameObject = new();
-		internal static ExtendedRadioUI_Mono extendedRadioUi;
-		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}";
-
-		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
-
 		static internal readonly string resources = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "resources");
 		public static readonly string CustomRadiosPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "CustomRadios");
 		static private readonly string PathToParent = Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName;
@@ -42,27 +29,39 @@ namespace ExtendedRadio.Patches
 		public static readonly string ModsFolderCustomRadio = Path.Combine(PathToMods,"CustomRadios");
 		public static readonly string ModsFolderRadioAddons = Path.Combine(PathToMods,"RadioAddons");
 
-		static void Prefix(GameManager __instance)
-		{		
-
-			List<string> pathToIconToLoad = [Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)];
-
-			Directory.CreateDirectory(CustomRadiosPath);
-			CustomRadios.RegisterCustomRadioDirectory(CustomRadiosPath);
+		static void Postfix(GameManager __instance)
+		{
+			// Directory.CreateDirectory(CustomRadiosPath);
+			// CustomRadios.RegisterCustomRadioDirectory(CustomRadiosPath);
 
 			if(!Directory.Exists(resources)) {
 				Directory.CreateDirectory(resources);
 				File.Move(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DefaultIcon.svg"), Path.Combine(resources , "DefaultIcon.svg"));
 			}
 
-			if(Directory.Exists(ModsFolderCustomRadio)) {
-				CustomRadios.RegisterCustomRadioDirectory(ModsFolderCustomRadio);
-				pathToIconToLoad.Add(PathToMods);
-			}
+			CustomRadios.SearchForCustomRadiosFolder(PathToParent);
+
+			// if(Directory.Exists(ModsFolderCustomRadio)) {
+			// 	CustomRadios.RegisterCustomRadioDirectory(ModsFolderCustomRadio);
+			// 	pathToIconToLoad.Add(PathToMods);
+			// }
 
 			if(Directory.Exists(ModsFolderRadioAddons)) {
 				RadioAddons.RegisterRadioAddonsDirectory(ModsFolderRadioAddons);
 			}
+		}
+	}
+
+	[HarmonyPatch(typeof(GameManager), "InitializeThumbnails")]
+	internal class GameManager_InitializeThumbnails
+	{	
+		internal static List<string> pathToIconToLoad = [Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)];
+		static readonly string IconsResourceKey = $"{MyPluginInfo.PLUGIN_NAME.ToLower()}";
+
+		public static readonly string COUIBaseLocation = $"coui://{IconsResourceKey}";
+
+		static void Prefix(GameManager __instance)
+		{		
 
 			var gameUIResourceHandler = (GameUIResourceHandler)GameManager.instance.userInterface.view.uiSystem.resourceHandler;
 			
@@ -76,10 +75,18 @@ namespace ExtendedRadio.Patches
 				IconsResourceKey, pathToIconToLoad
 			);
 
-			extendedRadioUi = extendedRadioGameObject.AddComponent<ExtendedRadioUI_Mono>();
-
+		}
+		internal static void AddNewIconsFolder(string pathToFolder) {
+			if(!pathToIconToLoad.Contains(pathToFolder)) pathToIconToLoad.Add(pathToFolder);
 		}
 	}
+
+    [HarmonyPatch(typeof(SystemOrder), "Initialize")]
+    public static class SystemOrderPatch {
+        public static void Postfix(Game.UpdateSystem updateSystem) {
+            updateSystem.UpdateAt<ExtendedRadioUI>(Game.SystemUpdatePhase.UIUpdate);
+        }
+    }
 
 	[HarmonyPatch(typeof( Radio ), "LoadRadio")]
 	class Radio_LoadRadio {
@@ -212,11 +219,11 @@ namespace ExtendedRadio.Patches
 		static void Postfix( GamePanelUISystem __instance, GamePanel panel) {
 			if(panel is RadioPanel) { //panel.GetType().ToString() == "Game.UI.InGame.RadioPanel"
 
-				GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("Setup.js"));
+				ExtendedRadioUI.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("Setup.js"));
 
-				GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("ExtendedRadioSettings.js"));
+				ExtendedRadioUI.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("ExtendedRadioSettings.js"));
 				if(Settings.customNetworkUI) {
-					GameManager_InitializeThumbnails.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("RadioNetworkFix.js"));
+					ExtendedRadioUI.extendedRadioUi.ChangeUiNextFrame(ExtendedRadioUI.GetStringFromEmbbededJSFile("RadioNetworkFix.js"));
 				}
 			}
 		}

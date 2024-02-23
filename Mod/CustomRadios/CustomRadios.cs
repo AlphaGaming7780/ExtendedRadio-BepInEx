@@ -5,6 +5,7 @@ using static Game.Audio.Radio.Radio;
 using ExtendedRadio.Patches;
 using HarmonyLib;
 using System.Dynamic;
+using System.IO.Compression;
 
 namespace ExtendedRadio
 {
@@ -79,10 +80,29 @@ namespace ExtendedRadio
 			ExtendedRadio.radioTravers.Field("m_RadioChannels").SetValue(m_RadioChannels);
 			ExtendedRadio.radioTravers.Field("m_CachedRadioChannelDescriptors").SetValue(null);
 		}
+
+		internal static void SearchForCustomRadiosFolder(string ModsFolderPath) {
+			foreach(DirectoryInfo directory in new DirectoryInfo(ModsFolderPath).GetDirectories()) {
+				if(File.Exists($"{directory.FullName}\\CustomRadios.zip")) {
+					if(Directory.Exists($"{directory.FullName}\\CustomRadios")) Directory.Delete($"{directory.FullName}\\CustomRadios", true);
+					ZipFile.ExtractToDirectory($"{directory.FullName}\\CustomRadios", directory.FullName);
+					File.Delete($"{directory.FullName}\\CustomRadios.zip");
+				}
+				if(Directory.Exists($"{directory.FullName}\\CustomRadios")) RegisterCustomRadioDirectory($"{directory.FullName}\\CustomRadios");
+			}
+		}
+
 		/// <summary>This methode add you folder that contains your radio to the list of radio to load.</summary>
 		/// <param name="path">The global path to the folder that contains your custom radio</param>
 		public static void RegisterCustomRadioDirectory(string path) {
+			if(radioDirectories.Contains(path)) return;
 			radioDirectories.Add(path);
+			GameManager_InitializeThumbnails.AddNewIconsFolder(new DirectoryInfo(path).Parent.FullName);
+			Plugin.Logger.LogMessage("New Radio");
+			foreach(string s in radioDirectories) {
+				Plugin.Logger.LogMessage(s);
+			}
+			
 		}
 
 		/// <summary>This methode add your Network to the game.</summary>

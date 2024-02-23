@@ -13,16 +13,16 @@ namespace ExtendedRadio
 		public static string LastRadio = null;
 
 		internal static void LoadSettings() {
-			if(Directory.Exists(GameManager_InitializeThumbnails.PathToMods)) {
-				if(File.Exists(GameManager_InitializeThumbnails.PathToMods+"\\settings.json")) {
-					JsonToSettings(Decoder.Decode(File.ReadAllText(GameManager_InitializeThumbnails.PathToMods+"\\settings.json")).Make<SettingsJSON>());
+			if(Directory.Exists(GameManager_Awake.PathToMods)) {
+				if(File.Exists(GameManager_Awake.PathToMods+"\\settings.json")) {
+					JsonToSettings(Decoder.Decode(File.ReadAllText(GameManager_Awake.PathToMods+"\\settings.json")).Make<SettingsJSON>());
 				}
 			} 
 		}
 
 		internal static void SaveSettings() {
-			if(!Directory.Exists(GameManager_InitializeThumbnails.PathToMods)) Directory.CreateDirectory(GameManager_InitializeThumbnails.PathToMods);
-			File.WriteAllText(GameManager_InitializeThumbnails.PathToMods+"\\settings.json", Encoder.Encode(SettingsToJSON(), EncodeOptions.None));
+			if(!Directory.Exists(GameManager_Awake.PathToMods)) Directory.CreateDirectory(GameManager_Awake.PathToMods);
+			File.WriteAllText(GameManager_Awake.PathToMods+"\\settings.json", Encoder.Encode(SettingsToJSON(), EncodeOptions.None));
 		}
 
 		private static SettingsJSON SettingsToJSON() {
